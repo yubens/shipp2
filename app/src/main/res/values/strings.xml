@@ -1,0 +1,104 @@
+<resources>
+    <string name="app_name">Idus App Shipping</string>
+    <string name="strUsuario">Usuario</string>
+    <string name="strNomUsuario">Usuario</string>
+    <string name="strPassword">Contraseña</string>
+    <string name="btnIngresar">INGRESAR</string>
+    <string name="msgErrInternet">No tiene conexion a internet. verifique la red WIFI o los datos del Equipo</string>
+    <string name="msgUsuarioincorrecto">El usuario o contraseña, no coinciden con los datos de la base de datos,
+        vuelva a intentarlo. O no está conecatado al servidor, tambien verifique la conexion</string>
+    <string name="nombreEmpresa">nombre empresa</string>
+    <string name="titFletero">Fletero:</string>
+    <string name="nombreFletero">nombre fletero</string>
+    <string name="titNumerodeCaja">Nro Caja</string>
+    <string name="titPlanilla">Nro Planilla</string>
+    <string name="bntAceptar">Aceptar</string>
+    <string name="txtMensaje">Mensajes</string>
+    <string name="strFecha">Fecha</string>
+    <string name="strComprobante">Comprobante</string>
+    <string name="strNombreCliente">Nombre Cliente</string>
+    <string name="strDomicilio">Domicilio</string>
+    <string name="strNombreVendedor">Nombre Vendedor</string>
+    <string name="strTotal">Total</string>
+    <string name="strSaldo">Saldo</string>
+    <string name="strPago">Pago</string>
+    <string name="strCancelar">Cancelar</string>
+    <string name="strHistoricoPago">Historico</string>
+    <string name="strDetalle">Detalle</string>
+    <string name="strCodigo">Codigo</string>
+    <string name="strCantidad">Cantidad</string>
+    <string name="strPrecioUnitario">Precio Unitario</string>
+    <string-array name="strOpcionesComprobante">
+        <item>A PAGAR</item>
+        <item>PAGO TOTAL</item>
+        <item>PAGO PARCIAL</item>
+        <item>REENVIAR</item>
+        <item>EN ESPERA</item>
+    </string-array>
+    <string name="strMensajeInsertado">El movimiento se registró correctamente!!!</string>
+    <string name="strMensajeDeNoPermisos">"No ha concedido los permisos de localización"</string>
+    <string name="strActualizarComprobantes">Actualizar</string>
+    <string name="strDondeEstoy">Donde Estoy</string>
+    <string name="strErrorGPS">Hay un error con el GPS, verifique e informe sobre el mismo</string>
+    <string name="strErrorDispositivos">Error en los dispositivos de geoposicionamiento</string>
+    <string name="title_activity_maps">Mapa</string>
+    <string name="strVerEnMapa">Ver en mapa</string>
+    <string name="strImporteMayorACero">El importe debe ser mayor a Cero (0)</string>
+    <string name="strTotalMenorAImporte">El total es menor al importe</string>
+    <string name="strLatitud">Latitud</string>
+    <string name="strLongitud">Longitud</string>
+    <string name="strIr">Ir</string>
+    <string name="strDireccionGoogle">Dirección Google</string>
+    <string name="strDevolucion">Devoluciones</string>
+    <string name="strFinReparto">Fin Reparto</string>
+    <string name="strMensajeFinReparto">Esta intentanto ingresar al fin del reparto. Aqui se hará la rendición correspondiente al mismo</string>
+    <string name="strEnviarMensaje">Enviar Mensajes</string>
+    <string name="strMensajeFinDeReparto">¿Está seguro de que desea cerrar el reparto?</string>
+    <string name="strNoEstanFinalizadosTodosLosComprobantes">No estan finalizados todos los comprobantes. Debe por lo menos seleccionar una accion en cada comprobante.</string>
+    <string name="strAdvertencia">Advertencia!!</string>
+    <string name="strTextoSeñaladorArriba">Seleccione Arriba para cambiar</string>
+    <string name="strConfirmar">Confirmar</string>
+    <string name="strFirma">Firmar</string>
+    <string name="strFileFirma">imagen firma: dirección</string>
+    <string name="strNoEstaFirmado">No ha firmado que el comprobante no va a quedar en Cta. Cte. No se puede proceder sin firmar.</string>
+    <string name="strFirmaGuardada">Firma Guardada Correctamente!!!.</string>
+    <string name="strImagenSubida">Imagen de Firma subida al servidor</string>
+    <string name="strID">ID</string>
+    <string name="strValor">Valor</string>
+    <string name="strSubTotal">Sub Total</string>
+    <string name="strTituloRendicionPlanilla">Esta Rindiendo: </string>
+    <string name="strExistoMoneda">"Exito.. se regristro moneda!!"</string>
+    <string name="strMensajeDeConfirimacionRendicio">¿Está seguro de que desea CONFIRMAR la rendicion? Esta accion dejará sin posibilidades de edicion de la rendicion</string>
+    <string name="strARendir">A Rendir</string>
+    <string name="strDiferencia">Diferencia</string>
+    <string name="strTotalRendido">Total Rendido</string>
+
+    <string name="appTitle">IDUS SHIPPING</string>
+    <string name="hintUser">Escribe aqui tu usuario</string>
+    <string name="hintPass">Escribe aqui tu contraseña</string>
+
+    <string name="txtNombreCliente">Nombre Cliente</string>
+    <string name="ediCodigo">Código</string>
+    <string name="txtDetalleArticulo">Detalle del Artículo</string>
+    <string name="txtPrecio">Precio</string>
+    <string name="txtMultiplo">Múltiplo de</string>
+    <string name="txtTotal">Total</string>
+    <string name="ediCantidad">Cantidad</string>
+    <string name="mensajeBorrado">¿Está seguro que desea borrar el item seleccionado?</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="rechazar">Rechazar</string>
+    <string name="tituloImportamte">IMPORTANTE</string>
+    <string name="mensajeMutiplo">La cantidad que está ingresando no es múltiplo del artículo. Por favor corrija el dato.</string>
+    <string name="mensajeInsercionOK">Se insertó correctamente la devolución.</string>
+    <string name="mensajeDeEnvio">¿Está seguro de cerrar y enviar la devolución?</string>
+    <string name="mensajeDeNoEnvio">No se envio información. Puede seguir trabajando en este comprobante</string>
+    <string name="mensajeDeNoInternet">No tiene conexion a Internet. Intentelo mas tarde</string>
+    <string name="ediDescuento">Descuento</string>
+    <string name="errorNulo">Hay datos NULOS. Por favor cierre y vuelva a abrir la App</string>
+    <string name="descuentoNoAplicado">Por favor ingresa un descuento valido</string>
+    <!--<string name="descuentoNoAplicado">El descuento no está aplicado en el precio final. Por favor chequee</string>-->
+    <string name="mesajeDeSalida">Presione 2 veces Back/Atras para Salir</string>
+    <string name="btnAgregar">Agregar</string>
+    <string name="btnLimpiar">Limpiar</string>
+    <string name="btnEnviar">Enviar</string>
+</resources>
