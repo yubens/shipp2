@@ -120,6 +120,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
         listaComprobantes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("click");
                 Comprobante comprobante = (Comprobante) parent.getItemAtPosition(position);
                 if (comprobante.getEstado() > 0) {
                     Toast.makeText(getApplicationContext(), "Este comprobante ya tiene registrada una actividad", Toast.LENGTH_LONG).show();
@@ -162,10 +163,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.mnu01Devolución) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Pronto Devoluciones!!!", Toast.LENGTH_LONG);
-            toast.show();
-        } else if (id == R.id.mnu01EnviarMensajes) {
+        if (id == R.id.mnu01EnviarMensajes) {
             Toast toast = Toast.makeText(getApplicationContext(), "Pronto Mensajes!!", Toast.LENGTH_LONG);
             toast.show();
         } else if (id == R.id.mnu01FinReparto) {
@@ -205,6 +203,11 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                                                     i.putExtra("_nombreFletero", _nombreFletero);
                                                     startActivity(i);
                                                 }
+                                                else{
+                                                    Toast.makeText(getApplicationContext(), "Se produjo un error al insertar el registro de rendición",
+                                                                    Toast.LENGTH_LONG).show();
+                                                }
+
                                             }
                                         });
                                     }
@@ -237,16 +240,16 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(resultado.equals("[]")){
-                            strPlanilla.setText("No hay comprobantes para la planilla: " + _caja + " | " + _planilla);
-                            mostrarMenu = false;
-                            pb01.setVisibility(View.GONE);
-                            invalidateOptionsMenu();
-                        }
-                        else{
-                            lvComprobante = listaComprobantes01(resultado);
-                            mostrarLista();
-                        }
+                    if(resultado.equals("[]")){
+                        strPlanilla.setText("No hay comprobantes para la planilla: " + _caja + " | " + _planilla);
+                        mostrarMenu = false;
+                        pb01.setVisibility(View.GONE);
+                        invalidateOptionsMenu();
+                    }
+                    else{
+                        lvComprobante = listaComprobantes01(resultado);
+                        mostrarLista();
+                    }
                     }
                 });
 
@@ -297,9 +300,9 @@ public class ListarComprobantesActivity extends AppCompatActivity {
     }
 
     public int enviarDiasPOST(String idEmpresa, String idFletero, String caja, String numeroPlanilla) {
-        String linea = "";
+        //String linea = "";
         int respuesta = 0;
-        StringBuilder result = null;
+        //StringBuilder result = null;
 
         try {
             if (verificaConexion(getApplicationContext())) {
@@ -324,7 +327,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                 wr.writeBytes(urlParametros);
                 wr.close();
 
-                InputStream in = cnx.getInputStream();
+                cnx.getInputStream();
                 respuesta = cnx.getResponseCode();
 
                 return respuesta;
@@ -400,6 +403,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
+            System.out.println("adaptador comprobante");
 
             DecimalFormat format = new DecimalFormat("#0.00");
             View item = convertView;
@@ -410,6 +414,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
             TextView compDomicilio = (TextView) item.findViewById(R.id.compDomicilio);
             TextView compTotal = (TextView) item.findViewById(R.id.compTotal);
             ImageView imageView = (ImageView) item.findViewById(R.id.imgComp);
+
             if (lvComprobante.get(position).getMhr() == 1) {
                 imageView.setImageResource(R.mipmap.cobranza);
                 if (lvComprobante.get(position).getSaldo() > .10) {
@@ -421,30 +426,57 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                 imageView.setImageResource(R.mipmap.entrega_luiza);
                 compTotal.setText("Total \n$ " + format.format(lvComprobante.get(position).getTotal()));
             }
+
             compFecha.setText(lvComprobante.get(position).getFecha());
             compComp.setText(lvComprobante.get(position).getComprobante());
             compNombre.setText(lvComprobante.get(position).getNombreCliente());
             compDomicilio.setText(lvComprobante.get(position).getDomicilioCliente());
+
             switch (lvComprobante.get(position).getTipo_mov()) {
-                case -1:
-                    compComp.setBackgroundColor(Color.WHITE);
-                    compFecha.setBackgroundColor(Color.WHITE);
-                    break;
+
                 case 0:
-                    compComp.setBackgroundColor(Color.GREEN);
-                    compFecha.setBackgroundColor(Color.GREEN);
+                    compComp.setBackgroundColor(getResources().getColor(R.color.colorRosaPagar));
+                    compComp.setTextColor(Color.WHITE);
+                    compFecha.setBackgroundColor(getResources().getColor(R.color.colorRosaPagar));
+                    compFecha.setTextColor(Color.WHITE);
+                    compTotal.setBackgroundColor(getResources().getColor(R.color.colorRosaPagar));
+                    compTotal.setTextColor(Color.WHITE);
                     break;
+
                 case 1:
-                    compComp.setBackgroundColor(Color.CYAN);
-                    compFecha.setBackgroundColor(Color.CYAN);
+                    compComp.setBackgroundColor(getResources().getColor(R.color.colorCelesteTotal));
+                    compComp.setTextColor(Color.WHITE);
+                    compFecha.setBackgroundColor(getResources().getColor(R.color.colorCelesteTotal));
+                    compFecha.setTextColor(Color.WHITE);
+                    compTotal.setBackgroundColor(getResources().getColor(R.color.colorCelesteTotal));
+                    compTotal.setTextColor(Color.WHITE);
                     break;
+
                 case 2:
-                    compComp.setBackgroundColor(Color.YELLOW);
-                    compFecha.setBackgroundColor(Color.YELLOW);
+                    compComp.setBackgroundColor(getResources().getColor(R.color.colorAmarilloParcial));
+                    compFecha.setBackgroundColor(getResources().getColor(R.color.colorAmarilloParcial));
+                    compTotal.setBackgroundColor(getResources().getColor(R.color.colorAmarilloParcial));
                     break;
+
+                case 3:
+                    compComp.setBackgroundColor(getResources().getColor(R.color.colorVerdeReenvio));
+                    compComp.setTextColor(Color.WHITE);
+                    compFecha.setBackgroundColor(getResources().getColor(R.color.colorVerdeReenvio));
+                    compFecha.setTextColor(Color.WHITE);
+                    compTotal.setBackgroundColor(getResources().getColor(R.color.colorVerdeReenvio));
+                    compTotal.setTextColor(Color.WHITE);
+                    break;
+
+                case 4:
+                    compComp.setBackgroundColor(getResources().getColor(R.color.colorNaranjaEspera));
+                    compComp.setTextColor(Color.WHITE);
+                    compFecha.setBackgroundColor(getResources().getColor(R.color.colorNaranjaEspera));
+                    compFecha.setTextColor(Color.WHITE);
+                    compTotal.setBackgroundColor(getResources().getColor(R.color.colorNaranjaEspera));
+                    compTotal.setTextColor(Color.WHITE);
+                    break;
+
                 default:
-                    compComp.setBackgroundColor(Color.WHITE);
-                    compFecha.setBackgroundColor(Color.WHITE);
                     break;
             }
             return item;
@@ -457,17 +489,15 @@ public class ListarComprobantesActivity extends AppCompatActivity {
         AdaptadorComprobantes adapter = new AdaptadorComprobantes(lvComprobante);
         listaComprobantes.setAdapter(adapter);
         pb01.setVisibility(View.GONE);
+
         if (listaComprobantes.getCount() > 0) {
             strPlanilla.setText("Planilla: " + _caja + " | " + _planilla);
 
             //se muestran los botones al haber comprobantes
             btnActualizar.setVisibility(View.VISIBLE);
             btnGPS.setVisibility(View.VISIBLE);
-        } else {
-            /*strPlanilla.setText("No hay comprobantes para la planilla: " + _caja + " | " + _planilla);
-            mostrarMenu = false;
-            invalidateOptionsMenu();*/
         }
+
         listaComprobantes.setVisibility(View.VISIBLE);
 
     }

@@ -64,7 +64,6 @@ public class EditaMonedaActivity extends AppCompatActivity {
 
         ediCantidad.addTextChangedListener(textWa);
 
-
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,23 +75,42 @@ public class EditaMonedaActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pBar.setVisibility(View.VISIBLE);
-                Thread tr = new Thread() {
-                    @Override
-                    public void run() {
-                        final int response = enviarDiasPOST(moneda.getId(), Double.parseDouble(ediCantidad.getText().toString()));
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (response == 200) {
+
+                if(ediCantidad.getText().toString().isEmpty()){
+                    Toast.makeText(getApplicationContext(), "Coloca una cantidad para continuar",
+                            Toast.LENGTH_SHORT).show();
+                    pBar.setVisibility(View.GONE);
+                }
+                else{
+                    Thread tr = new Thread() {
+                        boolean cantVacia = false;
+                        @Override
+                        public void run() {
+
+                            final int response = enviarDiasPOST(moneda.getId(), Double.parseDouble(ediCantidad.getText().toString()));
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String msj;
+                                    if (response == 200) {
+                                        msj = getApplicationContext().getString(R.string.strExitoMoneda);
+                                    }
+                                    else{
+                                        msj = getApplicationContext().getString((R.string.strErrorMoneda));
+                                    }
+
                                     pBar.setVisibility(View.GONE);
-                                    Toast.makeText(getApplicationContext(), R.string.strExistoMoneda, Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_LONG).show();
                                     finish();
                                 }
-                            }
-                        });
-                    }
-                };
-                tr.start();
+                            });
+                        }
+
+                    };
+                    tr.start();
+                }
+
             }
         });
 
@@ -114,6 +132,11 @@ public class EditaMonedaActivity extends AppCompatActivity {
                 importe = Double.parseDouble(s.toString());
                 resultado = moneda.getValor() * importe;
                 strSubTotal.setText(format.format(resultado));
+            }
+            System.out.println("cambiando...");
+
+            if(ediCantidad.equals("")){
+                strSubTotal.setText("");
             }
         }
 

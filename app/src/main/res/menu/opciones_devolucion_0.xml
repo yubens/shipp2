@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/empty"
+        android:icon="@drawable/menu48"
+        android:orderInCategory="101"
+        android:title="Menu"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/mnu01DevolucionSinComp"
+                android:icon="@drawable/devolucion48"
+                android:title="@string/strDevolucionSinComp"
+                app:showAsAction="ifRoom" />
+
+            <item
+                android:id="@+id/mnu02DevolucionParcial"
+                android:icon="@drawable/devolucion48"
+                android:title="@string/strDevolucionParcial"
+                android:titleCondensed="Devolución Parcial"
+                app:showAsAction="ifRoom|withText" />
+
+            <item
+                android:id="@+id/mnu03DevolucionTotal"
+                android:icon="@drawable/devolucion48"
+                android:title="@string/strDevolucionTotal"
+                app:showAsAction="ifRoom|withText" />
+        </menu>
+    </item>
+</menu>

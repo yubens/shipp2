@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                                     if (r > 0) {
                                         pb00.setVisibility(View.GONE);
                                         txtMensaje.setText("");
-                                        Intent i = new Intent(getApplicationContext(), Principal.class);
+                                        Intent i = new Intent(getApplicationContext(), PrincipalActivity.class);
                                         i.putExtra("_idEmpresa", _idEmpresa);
                                         i.putExtra("_idFletero", _idFletero);
                                         i.putExtra("nombreEmpresa", nombreEmpresa);
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                                     } else {
                                         pb00.setVisibility(View.GONE);
                                         txtMensaje.setText("Posiblemente no se puede conectar al servidor IDUS®");
-                                        Toast toast = Toast.makeText(getApplicationContext(), R.string.msgUsuarioincorrecto, Toast.LENGTH_LONG);
+                                        Toast toast = Toast.makeText(getApplicationContext(), R.string.msgUsuarioIncorrecto, Toast.LENGTH_LONG);
                                         toast.show();
                                     }
                                 }

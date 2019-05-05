@@ -11,8 +11,9 @@ public class Articulo implements Serializable {
     private int existencia;
     private int unidadVenta;
     private int multiplo;
-    private int cantidad;
+    private double cantidad;
     private Double descuento;
+    private boolean elegido;
 
     public String getId() {
         return id;
@@ -86,11 +87,19 @@ public class Articulo implements Serializable {
         this.descuento = descuento;
     }
 
-    public int getCantidad() {
+    public double getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(double cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public boolean isElegido() {
+        return elegido;
+    }
+
+    public void setElegido(boolean elegido) {
+        this.elegido = elegido;
     }
 }

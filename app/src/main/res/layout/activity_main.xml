@@ -33,7 +33,7 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/appTitle"
                 android:textAlignment="center"
                 android:textSize="36sp"
@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strUsuario"
                 android:textAlignment="center"
                 android:textSize="18sp" />
@@ -59,8 +59,9 @@
                 android:id="@+id/txtUsuario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/strNomUsuario"
+                android:contentDescription="@string/strUsuario"
                 android:ems="10"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:hint="@string/hintUser"
                 android:inputType="textPersonName" />
 
@@ -69,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strPassword"
                 android:textAlignment="center"
                 android:textSize="18sp" />
@@ -80,6 +81,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/strPassword"
                 android:ems="10"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:hint="@string/hintPass"
                 android:inputType="textPassword" />
 
@@ -94,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/boton_redondo_morado"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/btnIngresar"
                     android:textColor="@android:color/background_light"
                     android:textStyle="bold" />
@@ -119,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/txtMensaje"
                     android:textAlignment="center" />
 

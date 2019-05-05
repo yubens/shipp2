@@ -87,15 +87,31 @@ public class RendicionFinalActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            arrayMoneR = listarMonedas(response);
-                            mostrarModeloMonedas();
-                            pBar.setVisibility(View.GONE);
+                            String msj ="";
 
-                            int r = obtDatosUnicoJSON(resultado);
-                            if (r > 0) {
-                                DecimalFormat format = new DecimalFormat("#0.00");
-                                strARendir.setText(format.format(Double.parseDouble(totalARendir)));
+                            if(response.equals("[]")){
+                                msj = "No se obtuvieron datos de la rendición";
+                                Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_SHORT).show();
                             }
+                            else if(resultado.equals("[]")){
+                                msj = "No se obtuvieron datos de la planilla";
+                                Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                arrayMoneR = listarMonedas(response);
+                                mostrarModeloMonedas();
+
+                                int r = obtDatosUnicoJSON(resultado);
+                                if (r > 0) {
+                                    DecimalFormat format = new DecimalFormat("#0.00");
+                                    strARendir.setText(format.format(Double.parseDouble(totalARendir)));
+                                }
+                                else{
+                                    Toast.makeText(getApplicationContext(),R.string.errorJson, Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                            pBar.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -148,23 +164,30 @@ public class RendicionFinalActivity extends AppCompatActivity {
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
+                                                String msj;
                                                 if (response == 200) {
-                                                    Toast.makeText(getApplicationContext(), R.string.strExistoMoneda, Toast.LENGTH_LONG).show();
-                                                    pBar.setVisibility(View.GONE);
+                                                    msj = getApplicationContext().getString(R.string.strExitoMoneda);
                                                 }
+                                                else{
+                                                    msj = getApplicationContext().getString((R.string.strErrorMoneda));
+                                                }
+
+                                                pBar.setVisibility(View.GONE);
+                                                Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_LONG).show();
+                                                finish();
                                             }
                                         });
                                     }
                                 };
                                 tr.start();
-                                Thread tr1 = new Thread() {
+                                /*Thread tr1 = new Thread() {
                                     @Override
                                     public void run() {
 
 
                                     }
                                 };
-                                tr1.start();
+                                tr1.start();*/
                             }
                         });
                 AlertDialog alert = alerta.create();
@@ -180,29 +203,46 @@ public class RendicionFinalActivity extends AppCompatActivity {
         Thread tr = new Thread() {
             @Override
             public void run() {
-                final String response = enviarGET(_idEmpresa, _caja, _planilla, "", 0);
-                final String resultado = enviarGET(_idEmpresa, _caja, _planilla, _idFletero, 1);
+                final String response = enviarGET(_idEmpresa, _caja, _planilla, "", 0); // error al listar las monedas de la planilla
+                final String resultado = enviarGET(_idEmpresa, _caja, _planilla, _idFletero, 1); // error al buscar el total de la planilla
                 final Double[] _aRendir = new Double[1];
-                final Double[] _tOtal = new Double[1];
+                final Double[] _total = new Double[1];
                 final Double[] _diferencia = new Double[1];
                 _aRendir[0] = 0.0;
-                _tOtal[0] = 0.0;
+                _total[0] = 0.0;
                 _diferencia[0] = 0.0;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        arrayMoneR = listarMonedas(response);
-                        mostrarModeloMonedas();
-                        pBar.setVisibility(View.GONE);
-                        int r = obtDatosUnicoJSON(resultado);
-                        if (r > 0) {
-                            DecimalFormat format = new DecimalFormat("#0.00");
-                            strARendir.setText(format.format(Double.parseDouble(totalARendir)));
-                            _tOtal[0] = Double.parseDouble(strTotal.getText().toString());
-                            _aRendir[0] = Double.parseDouble(strARendir.getText().toString());
-                            _diferencia[0] = _aRendir[0] - _tOtal[0];
-                            strDiferencia.setText(format.format(_diferencia[0]));
+                        String msj ="";
+
+                        if(response.equals("[]")){
+                            msj = "No se obtuvieron datos de las monedas";
+                            Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_SHORT).show();
                         }
+                        else if(resultado.equals("[]")){
+                            msj = "No se obtuvieron datos de la planilla";
+                            Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            arrayMoneR = listarMonedas(response);
+                            mostrarModeloMonedas();
+
+                            int r = obtDatosUnicoJSON(resultado);
+                            if (r > 0) {
+                                DecimalFormat format = new DecimalFormat("#0.00");
+                                strARendir.setText(format.format(Double.parseDouble(totalARendir)));
+                                _total[0] = Double.parseDouble(strTotal.getText().toString());
+                                _aRendir[0] = Double.parseDouble(strARendir.getText().toString());
+                                _diferencia[0] = _aRendir[0] - _total[0];
+                                strDiferencia.setText(format.format(_diferencia[0]));
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(),R.string.errorJson, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        pBar.setVisibility(View.GONE);
+
                     }
                 });
             }
@@ -332,7 +372,7 @@ public class RendicionFinalActivity extends AppCompatActivity {
         }
     }
 
-    public int enviarDiasPOST(String idEmrpesa, String caja, String planilla) {
+    public int enviarDiasPOST(String idEmpresa, String caja, String planilla) {
         String linea = "";
         int respuesta = 0;
         StringBuilder result = null;
@@ -341,7 +381,7 @@ public class RendicionFinalActivity extends AppCompatActivity {
         try {
             if (verificaConexion(getApplicationContext())) {
 
-                String urlParametros = "_idEmpresa=" + idEmrpesa + "&_caja=" + caja + "&_planilla=" + planilla;
+                String urlParametros = "_idEmpresa=" + idEmpresa + "&_caja=" + caja + "&_planilla=" + planilla;
                 urlParametros = urlParametros.replace(",", ".");
                 HttpURLConnection cnx = null;
                 URL url = new URL(_strURL + "/insertarTrabaRendicion.php");

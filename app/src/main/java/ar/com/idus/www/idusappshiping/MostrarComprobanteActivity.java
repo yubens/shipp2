@@ -52,12 +52,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import ar.com.idus.www.idusappshiping.modelos.Articulo;
 import ar.com.idus.www.idusappshiping.modelos.Comprobante;
-import ar.com.idus.www.idusappshiping.modelos.ComprobanteItems;
+import ar.com.idus.www.idusappshiping.modelos.ComprobanteItem;
 import ar.com.idus.www.idusappshiping.modelos.Historico;
+import ar.com.idus.www.idusappshiping.utilidades.Devoluciones;
 import cz.msebera.android.httpclient.Header;
 
 public class MostrarComprobanteActivity extends AppCompatActivity {
@@ -69,13 +72,16 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
     Spinner spOpciones;
     ProgressBar pbDetalle;
     ImageView imagenPago;
-    ArrayList<ComprobanteItems> listaItems;
+    ArrayList<ComprobanteItem> listaItems;
     ArrayList<Historico> listaHistorico;
     Comprobante comprobante;
-    String _strUrl, root, fname, _codigoEmpresa, _idEmpresa;
+    String _strUrl, root, fname, resultadoGET;
+    String _codigoEmpresa, _idEmpresa, _idCliente, _idFletero, _idVendedor;
+    int _caja, _planilla;
     File myDir, file;
     Boolean requiereFirma = true;
     Boolean firmo = false;
+    double total;
 
     //para localizar el dispositivo
     private LocationManager locManager;
@@ -111,7 +117,7 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         versionApp = BuildConfig.VERSION_NAME;
         versionAndroid = Build.VERSION.RELEASE;
 
-        Bundle recupera = getIntent().getExtras();
+        final Bundle recupera = getIntent().getExtras();
         if (recupera != null) {
             DecimalFormat format = new DecimalFormat("#.00");
             comprobante = (Comprobante) getIntent().getSerializableExtra("comprobante");
@@ -121,6 +127,8 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             strDomicilio.setText(comprobante.getDomicilioCliente());
             strVendedor.setText(comprobante.getNombreVendedor());
             strTotal.setText(format.format(comprobante.getTotal()));
+            total = comprobante.getTotal();
+
             if (comprobante.getSaldo() <= 0.01) {
                 strSaldo.setText(format.format(comprobante.getTotal()));
             } else {
@@ -130,42 +138,65 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             _strUrl = recupera.getString("_strURL");
             _codigoEmpresa = recupera.getString("_codigoEmpresa");
             _idEmpresa = recupera.getString("_idEmpresa");
+            _idCliente = comprobante.getIdCliente();
+            _idFletero = comprobante.getIdFletero();
+            _idVendedor = comprobante.getIdVendedor();
+            _caja = comprobante.getCaja();
+            _planilla = comprobante.getPlanilla();
 
 
             pbDetalle.setVisibility(View.VISIBLE);
+
             Thread tr = new Thread() {
                 @Override
                 public void run() {
-                    final String resultado = enviarDiasGET(0, comprobante);
+                    final int respuesta = enviarDiasGET(0, comprobante);
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            listaItems = listarComprobanteItems(resultado);
-                            mostrarListaItems();
-                            obtenerLocalizacion();
+                            if(respuesta == RESULT_OK){
+                                listaItems = listarComprobanteItems(resultadoGET);
+                                mostrarListaItems();
+                                obtenerLocalizacion();
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(), resultadoGET, Toast.LENGTH_LONG).show();
+                            }
                             pbDetalle.setVisibility(View.GONE);
                         }
                     });
+
                 }
             };
             tr.start();
         }
+
         btnDetalle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 pbDetalle.setVisibility(View.VISIBLE);
+
                 Thread td = new Thread() {
                     @Override
                     public void run() {
-                        final String resultado = enviarDiasGET(0, comprobante);
+                        final int respuesta = enviarDiasGET(0, comprobante);
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                listaItems = listarComprobanteItems(resultado);
-                                mostrarListaItems();
+                                if(respuesta == RESULT_OK){
+                                    listaItems = listarComprobanteItems(resultadoGET);
+                                    mostrarListaItems();
+                                    obtenerLocalizacion();
+                                }
+                                else{
+                                    Toast.makeText(getApplicationContext(), resultadoGET, Toast.LENGTH_LONG).show();
+                                }
                                 pbDetalle.setVisibility(View.GONE);
                             }
                         });
+
                     }
                 };
                 td.start();
@@ -179,12 +210,18 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                 Thread tr = new Thread() {
                     @Override
                     public void run() {
-                        final String resultado = enviarDiasGET(1, comprobante);
+                        final int respuesta = enviarDiasGET(1, comprobante);
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                listaHistorico = listarHistorico(resultado);
-                                mostrarListaHistorico();
+                                if(respuesta == RESULT_OK) {
+                                    listaHistorico = listarHistorico(resultadoGET);
+                                    mostrarListaHistorico();
+                                }
+                                else{
+                                    Toast.makeText(getApplicationContext(), resultadoGET, Toast.LENGTH_LONG).show();
+                                }
                                 pbDetalle.setVisibility(View.GONE);
                             }
                         });
@@ -200,35 +237,55 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                 String mensaje = "";
                 obtenerLocalizacion();
                 Boolean requiereImporte = false;
+
                 if (txtImporte.getText().toString().trim().equals("")) {
                     txtImporte.setText("0");
                 }
-                final double total = Double.parseDouble(strTotal.getText().toString().replace(",", "."));
+
+                //final double total = Double.parseDouble(strTotal.getText().toString().replace(",", "."));
                 final double importe = Double.parseDouble(txtImporte.getText().toString().replace(",", "."));
+
                 if (importe > total) {
                     Toast toast = Toast.makeText(getApplicationContext(), R.string.strTotalMenorAImporte, Toast.LENGTH_LONG);
                     toast.show();
                 } else {
                     if (comprobante.getMhr() == 0) {
-                        final int medio = spOpciones.getSelectedItemPosition();
-                        if (medio == 0) {
-                            mensaje = "¿Confirma dejar (A PAGAR) el comprobante: " + strComprobante.getText().toString() + " ?";
-                            if ((requiereFirma) && (firmo)) {
-                            } else {
-                                Toast toast = Toast.makeText(getApplicationContext(), R.string.strNoEstaFirmado, Toast.LENGTH_LONG);
-                                toast.show();
-                                return;
-                            }
-                        } else if (medio == 1) {
-                            mensaje = "¿Confirma el pago TOTAL del comprobante: " + strComprobante.getText().toString() + " por un valor de $: " + txtImporte.getText().toString() + " ?";
-                            requiereImporte = true;
-                        } else if (medio == 2) {
-                            mensaje = "¿Confirma el pago PARCIAL Del comprobante: " + strComprobante.getText().toString() + " por un valor de $: " + txtImporte.getText().toString() + " ?";
-                            requiereImporte = true;
-                        } else if (medio == 3) {
-                            mensaje = "¿Confirma RE ENVIAR el comprobante: " + strComprobante.getText().toString() + " ?";
+                        final int movimiento = spOpciones.getSelectedItemPosition();
+
+                        switch (movimiento){
+                            case 0:
+                                mensaje = "¿Confirma dejar A PAGAR el comprobante: " + strComprobante.getText().toString() + " ?";
+
+                                if(requiereFirma && !firmo) {
+                                    Toast toast = Toast.makeText(getApplicationContext(), R.string.strNoEstaFirmado, Toast.LENGTH_LONG);
+                                    toast.show();
+                                    return;
+                                }
+                                break;
+
+                            case 1:
+                                mensaje = "¿Confirma el PAGO TOTAL del comprobante: " + strComprobante.getText().toString() + " por un valor de $ " + txtImporte.getText().toString() + " ?";
+                                requiereImporte = true;
+                                break;
+
+                            case 2:
+                                mensaje = "¿Confirma el PAGO PARCIAL Del comprobante: " + strComprobante.getText().toString() + " por un valor de $ " + txtImporte.getText().toString() + " ?";
+                                requiereImporte = true;
+                                break;
+
+                            case 3:
+                                mensaje = "¿Confirma REENVIAR el comprobante: " + strComprobante.getText().toString() + " ?";
+                                break;
+
+                            case 4:
+                                mensaje = "¿Confirma dejar el comprobante " + strComprobante.getText().toString() + " EN ESPERA?";
+                                break;
+
+                            default:
+                                break;
                         }
-                        if (((requiereImporte) && (importe > 0)) || ((medio == 0) || (medio == 3))) {
+
+                        if (((requiereImporte) && (importe > 0)) || ((movimiento == 0) || (movimiento == 3) || (movimiento == 4))) {
                             AlertDialog.Builder alerta;
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
@@ -250,23 +307,28 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                                             Thread tr = new Thread() {
                                                 @Override
                                                 public void run() {
-                                                    final int respuesta = enviarDiasPOST(3, comprobante, importe, medio, lat, lon, pres, versionApp, versionAndroid);
+                                                    final int respuesta = enviarDiasPOST(3, comprobante, importe, movimiento, lat, lon, pres, versionApp, versionAndroid);
                                                     runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
                                                             if (respuesta == 200) {
                                                                 Toast toast = Toast.makeText(getApplicationContext(), R.string.strMensajeInsertado, Toast.LENGTH_LONG);
                                                                 toast.show();
-                                                                if (medio != 0) {
+                                                                if (movimiento != 0) {
                                                                     finish();
                                                                 }
+                                                            }
+                                                            else{
+                                                                Toast.makeText(getApplicationContext(),
+                                                                        "Se produjo un error al insertar la rendición del fletero",
+                                                                        Toast.LENGTH_SHORT).show();
                                                             }
                                                         }
                                                     });
                                                 }
                                             };
                                             tr.start();
-                                            if ((medio == 0) && (firmo) && (requiereFirma)) {
+                                            if ((movimiento == 0) && (firmo) && (requiereFirma)) {
                                                 subirFoto();
                                                 finish();
                                             }
@@ -287,15 +349,16 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                             Toast toast = Toast.makeText(getApplicationContext(), R.string.strImporteMayorACero, Toast.LENGTH_LONG);
                             toast.show();
                         }
-                    } else {
-                        final int medio = spOpciones.getSelectedItemPosition();
-                        if ((medio == 0) || (medio == 3)) {
+                    }
+                    else {
+                        final int movimiento = spOpciones.getSelectedItemPosition();
+                        if ((movimiento == 0) || (movimiento == 3)) {
                             mensaje = "No se puede usar esta opción para comprobantes que están para cobrar";
                             Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG);
                             toast.show();
                         } else {
                             if (importe > 0) {
-                                mensaje = "¿Confirma el pago Del comprobante: " + strComprobante.getText().toString() + " por un valor de $: " + txtImporte.getText().toString() + " ?";
+                                mensaje = "¿Confirma el pago del comprobante: " + strComprobante.getText().toString() + " por un valor de $ " + txtImporte.getText().toString() + " ?";
                                 AlertDialog.Builder alerta;
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                     alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
@@ -317,7 +380,7 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                                                 Thread tr = new Thread() {
                                                     @Override
                                                     public void run() {
-                                                        final int respuesta = enviarDiasPOST(3, comprobante, importe, medio, lat, lon, pres, versionApp, versionAndroid);
+                                                        final int respuesta = enviarDiasPOST(3, comprobante, importe, movimiento, lat, lon, pres, versionApp, versionAndroid);
                                                         runOnUiThread(new Runnable() {
                                                             @Override
                                                             public void run() {
@@ -325,6 +388,11 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                                                                     Toast toast = Toast.makeText(getApplicationContext(), R.string.strMensajeInsertado, Toast.LENGTH_LONG);
                                                                     toast.show();
                                                                     finish();
+                                                                }
+                                                                else{
+                                                                    Toast.makeText(getApplicationContext(),
+                                                                            "Se produjo un error al insertar la rendición del fletero",
+                                                                            Toast.LENGTH_SHORT).show();
                                                                 }
                                                             }
                                                         });
@@ -364,28 +432,46 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         spOpciones.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    txtImporte.setText("");
-                    txtImporte.setEnabled(false);
-                    requiereFirma = true;
-                    imagenPago.setImageResource(R.mipmap.button_a_pagar);
-                } else if (position == 1) {
-                    txtImporte.setText(strSaldo.getText().toString().replace(",", "."));
-                    txtImporte.setEnabled(true);
-                    txtImporte.requestFocus();
-                    requiereFirma = false;
-                    imagenPago.setImageResource(R.mipmap.button_pago_total);
-                } else if (position == 2) {
-                    txtImporte.setText("");
-                    txtImporte.setEnabled(true);
-                    txtImporte.requestFocus();
-                    requiereFirma = false;
-                    imagenPago.setImageResource(R.mipmap.button_pago_parcial);
-                } else if (position == 3) {
-                    txtImporte.setText("");
-                    txtImporte.setEnabled(false);
-                    requiereFirma = false;
-                    imagenPago.setImageResource(R.mipmap.button_re_enviar);
+                switch (position){
+                    case 0:
+                        txtImporte.setText("");
+                        txtImporte.setEnabled(false);
+                        requiereFirma = true;
+                        imagenPago.setImageResource(R.mipmap.button_a_pagar);
+                        break;
+
+                    case 1:
+                        txtImporte.setText(strSaldo.getText().toString().replace(",", "."));
+                        txtImporte.setEnabled(true);
+                        txtImporte.requestFocus();
+                        requiereFirma = false;
+                        imagenPago.setImageResource(R.mipmap.button_pago_total);
+                        break;
+
+                    case 2:
+                        txtImporte.setText("");
+                        txtImporte.setEnabled(true);
+                        txtImporte.requestFocus();
+                        requiereFirma = false;
+                        imagenPago.setImageResource(R.mipmap.button_pago_parcial);
+                        break;
+
+                    case 3:
+                        txtImporte.setText("");
+                        txtImporte.setEnabled(false);
+                        requiereFirma = false;
+                        imagenPago.setImageResource(R.mipmap.button_reenvio);
+                        break;
+
+                    case 4:
+                        txtImporte.setText("");
+                        txtImporte.setEnabled(false);
+                        requiereFirma = false;
+                        imagenPago.setImageResource(R.mipmap.button_espera);
+                        break;
+
+                    default:
+                        break;
                 }
             }
 
@@ -399,7 +485,11 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.opciones_devolucion, menu);
+        if(comprobante.getMhr() == 0){
+            getMenuInflater().inflate(R.menu.opciones_devolucion_0, menu);
+        } else{
+            getMenuInflater().inflate(R.menu.opciones_devolucion_1, menu);
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -409,7 +499,7 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         int id = item.getItemId();
         String cliente[];
 
-        if (id == R.id.mnu01Devolución) {
+        if (id == R.id.mnu01DevolucionSinComp) {
 
             if(_codigoEmpresa.equals("534")){
                 Toast.makeText(getApplicationContext(), "La empresa actual, no permite el ingreso a esta opción",
@@ -418,13 +508,57 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             else{
                 cliente = comprobante.getIdCliente().split("CLIENTE");
 
-                Intent intent = new Intent(getApplicationContext(), CargaDevolucion.class);
-                intent.putExtra("_idVendedor", comprobante.getIdVendedor());
+                Intent intent = new Intent(getApplicationContext(), DevolucionSinComprobanteActivity.class);
+                intent.putExtra("_idVendedor", _idVendedor);
                 intent.putExtra("_idEmpresa", _idEmpresa);
                 intent.putExtra("_codCliente", cliente[1]);
+                intent.putExtra("_caja", _caja);
+                intent.putExtra("_planilla", _planilla);
+                intent.putExtra("_idFletero", _idFletero);
+
                 startActivity(intent);
             }
 
+        } else if (id == R.id.mnu02DevolucionParcial){
+            Toast.makeText(getApplicationContext(), "Devolucion Parcial", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(getApplicationContext(), DevolucionParcialActivity.class);
+            intent.putExtra("_idVendedor", _idVendedor);
+            intent.putExtra("_idEmpresa", _idEmpresa);
+            intent.putExtra("_idCliente", _idCliente);
+            intent.putExtra("_idFletero", _idFletero);
+            intent.putExtra("_caja", _caja);
+            intent.putExtra("_planilla", _planilla);
+            intent.putExtra("_lista", listaItems);
+            intent.putExtra("_nombCliente", comprobante.getNombreCliente());
+            intent.putExtra("_comprobante", comprobante.getComprobante());
+
+            startActivity(intent);
+
+        } else if (id == R.id.mnu03DevolucionTotal){
+            //Toast.makeText(getApplicationContext(), "Devolucion Total", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder alerta;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext());
+            }
+
+            alerta.setTitle(R.string.tituloImportamte);
+            alerta.setMessage(R.string.alertaDevolTotal);
+            alerta.setCancelable(false);
+            alerta.setPositiveButton(R.string.confirmar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    totalReturn();
+                }
+            }).setNegativeButton(R.string.rechazar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            }).show();
         }
 
         return super.onContextItemSelected(item);
@@ -459,27 +593,29 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
     }
 
     //muestra los items del comprobante
-    private ArrayList<ComprobanteItems> listarComprobanteItems(String response) {
-        ArrayList<ComprobanteItems> lista = new ArrayList<ComprobanteItems>();
+    private ArrayList<ComprobanteItem> listarComprobanteItems(String response) {
+        ArrayList<ComprobanteItem> lista = new ArrayList<ComprobanteItem>();
         try {
             JSONArray json = new JSONArray(response);
             for (int i = 0; i < json.length(); i++) {
-                ComprobanteItems items = new ComprobanteItems();
-                items.setId(json.getJSONObject(i).getString("ID"));
-                items.setCantidad(json.getJSONObject(i).getDouble("CANTIDAD"));
-                items.setDetalle(json.getJSONObject(i).getString("DETALLE"));
-                items.setCodigoArticulo(json.getJSONObject(i).getString("CODIGO"));
-                items.setIdArticulo(json.getJSONObject(i).getString("ARTICULO_ID"));
-                items.setItem(json.getJSONObject(i).getInt("ITEM"));
-                items.setPorcentajeDescuento(json.getJSONObject(i).getDouble("PORCENTAJEDESCUENTO"));
-                items.setPrecioCosto(json.getJSONObject(i).getDouble("PRECIOCOSTO"));
-                items.setPrecioImpInt(json.getJSONObject(i).getDouble("IMPORTEIMPUESTOINTERNO"));
-                items.setPrecioIva(json.getJSONObject(i).getDouble("IMPORTEIVA"));
-                items.setPrecioIvaO(json.getJSONObject(i).getDouble("IMPORTEIVAOTRO"));
-                items.setPrecioNeto(json.getJSONObject(i).getDouble("PRECIONETO"));
-                items.setPrecioFinal(json.getJSONObject(i).getDouble("PRECIO_FINAL"));
-                items.setTotal(items.getCantidad() * items.getPrecioFinal());
-                lista.add(items);
+                ComprobanteItem item = new ComprobanteItem();
+                item.setId(json.getJSONObject(i).getString("ID"));
+                item.setCantidad(json.getJSONObject(i).getDouble("CANTIDAD"));
+                item.setDetalle(json.getJSONObject(i).getString("DETALLE"));
+                item.setCodigoArticulo(json.getJSONObject(i).getString("CODIGO"));
+                item.setIdArticulo(json.getJSONObject(i).getString("ARTICULO_ID"));
+                item.setItem(json.getJSONObject(i).getInt("ITEM"));
+                item.setPorcentajeDescuento(json.getJSONObject(i).getDouble("PORCENTAJEDESCUENTO"));
+                item.setPrecioCosto(json.getJSONObject(i).getDouble("PRECIOCOSTO"));
+                item.setPrecioImpInt(json.getJSONObject(i).getDouble("IMPORTEIMPUESTOINTERNO"));
+                item.setPrecioIva(json.getJSONObject(i).getDouble("IMPORTEIVA"));
+                item.setPrecioIvaO(json.getJSONObject(i).getDouble("IMPORTEIVAOTRO"));
+                item.setPrecioNeto(json.getJSONObject(i).getDouble("PRECIONETO"));
+                item.setPrecioFinal(json.getJSONObject(i).getDouble("PRECIO_FINAL"));
+                item.setTotal(item.getCantidad() * item.getPrecioFinal());
+                //total += total + item.getTotal();
+
+                lista.add(item);
             }
             return lista;
         } catch (JSONException je) {
@@ -495,12 +631,13 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         }
     }
 
-    class AdaptadorComprobantesItems extends ArrayAdapter<ComprobanteItems> {
-        AdaptadorComprobantesItems(List<ComprobanteItems> listaTransComprobante) {
+    class AdaptadorComprobantesItems extends ArrayAdapter<ComprobanteItem> {
+        AdaptadorComprobantesItems(List<ComprobanteItem> listaTransComprobante) {
             super(MostrarComprobanteActivity.this, R.layout.comprobante_items, listaItems);
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
+
 
             DecimalFormat format = new DecimalFormat("#.00");
             String detalle = listaItems.get(position).getDetalle();
@@ -608,13 +745,150 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         }
     }
 
+    public void totalReturn(){
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+
+                //double _total = Double.valueOf(txtTotal.getText().toString().replace(",", "."));
+               final boolean res = insert();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String msj;
+                        if (res) {
+
+                            msj = getApplicationContext().getString(R.string.mensajeInsercionOK);
+                        }
+                        else{
+                            msj = getApplication().getString(R.string.mensajeInsercionError);
+                        }
+
+                        Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                });
+            }
+        };
+        thread.start();
+    }
+
+    public boolean insert(){
+        if ((_idCliente == null) || (_idVendedor == null) || (_idEmpresa == null)) {
+            Toast.makeText(getApplicationContext(), R.string.errorNulo, Toast.LENGTH_LONG).show();
+            finish();
+        }
+
+        //convierto los items en articulos a devolver
+        List<Articulo> articulos = new ArrayList<>();
+        Articulo articulo;
+        ComprobanteItem comprobanteItem;
+        Iterator<ComprobanteItem> iterator = listaItems.iterator();
+
+        while (iterator.hasNext()){
+            articulo = new Articulo();
+            comprobanteItem = iterator.next();
+
+            articulo.setId(comprobanteItem.getIdArticulo());
+            articulo.setCantidad(comprobanteItem.getCantidad());
+            articulo.setPrecioVenta(comprobanteItem.getPrecioFinal());
+            articulo.setPrecioConDesc(comprobanteItem.getPrecioFinal());
+            articulo.setDescuento(0.0);
+
+            articulos.add(articulo);
+        }
+
+        return Devoluciones.insertarDevolucion(_idEmpresa, _idVendedor, _idCliente, _idFletero,
+                                                total, _caja, _planilla, articulos);
+    }
+
+    public boolean insertReturn(){
+        String id = UUID.randomUUID().toString();
+        String _strURLDev = "http://idus-express-return.dnsalias.com/webserviceidusexpress";
+        boolean resultado = false;
+
+        if ((_idCliente == null) || (_idVendedor == null) || (_idEmpresa == null)) {
+            Toast.makeText(getApplicationContext(), R.string.errorNulo, Toast.LENGTH_LONG).show();
+
+        } else {
+            String urlParametros = "_id=" + id + "&_idempresa=" + _idEmpresa + "&_idvendedor=" + _idVendedor + "&_idcliente=" + _idCliente + "&_total=" + total
+                    + "&_idFletero=" + _idFletero + "&_codigoCaja=" + _caja + "&_planilla=" + _planilla;
+            urlParametros = urlParametros.replace(",", ".");
+            HttpURLConnection cnx = null;
+
+            try {
+                URL url = new URL(_strURLDev + "/insertar_devolucion.php");
+                cnx = (HttpURLConnection) url.openConnection();
+
+                //estableciendo el metodo
+                cnx.setRequestMethod("POST");
+                //longitud de los parametros que estamos enviando
+                cnx.setRequestProperty("Context-length", "" + Integer.toString(urlParametros.getBytes().length));
+                //se menciona para la salida de datos
+                cnx.setDoOutput(true);
+
+                DataOutputStream wr = new DataOutputStream(cnx.getOutputStream());
+                wr.writeBytes(urlParametros);
+                wr.close();
+
+                InputStream in = cnx.getInputStream();
+                int respuesta = cnx.getResponseCode();
+
+                //comienzo a grabar los items
+                if (respuesta == HttpURLConnection.HTTP_OK) {
+                    //Iterator it = items.iterator();
+                    Iterator<ComprobanteItem> it = listaItems.iterator();
+
+                    while (it.hasNext()) {
+                        String idItem = UUID.randomUUID().toString();
+                        String idArticulo, cantidad, subTotal, pxUni, Desc, precDesc;
+
+                        ComprobanteItem item = (ComprobanteItem) it.next();
+                        idArticulo = item.getId();
+                        cantidad = String.valueOf(item.getCantidad());
+                        pxUni = String.valueOf(item.getPrecioFinal());
+                        precDesc = "0.0"; // verificar
+                        Desc = "0.0"; // verificar
+                        subTotal = String.valueOf(item.getTotal());
+
+
+                        urlParametros = "_idcab=" + id + "&_id=" + idItem + "&_idarticulo=" + idArticulo + "&_cantidad=" + cantidad
+                                +"&_subtotal=" + subTotal + "&_pxuni=" + pxUni +"&_prdesc="+ precDesc
+                                +"&_pxcdesc="+ Desc;
+                        urlParametros=urlParametros.replace(",",".");
+                        URL url2 = new URL(_strURLDev + "/insertar_cuerpo_devolucion.php");
+                        cnx = (HttpURLConnection) url2.openConnection();
+                        cnx.setRequestMethod("POST");
+                        cnx.setRequestProperty("Context-length", "" + Integer.toString(urlParametros.getBytes().length));
+                        cnx.setDoOutput(true);
+
+                        DataOutputStream wr1 = new DataOutputStream(cnx.getOutputStream());
+                        wr1.writeBytes(urlParametros);
+                        wr1.close();
+
+                        InputStream in1 = cnx.getInputStream();
+                        int respuesta1 = cnx.getResponseCode();
+                        if (respuesta1 == HttpURLConnection.HTTP_OK) {
+                            resultado = true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        //return true;
+        return resultado;
+    }
 
     //envio y recepción webservice
-    public String enviarDiasGET(int numButton, Comprobante comp) {
+    public int enviarDiasGET(int numButton, Comprobante comp) {
 
         URL url = null;
         String linea = "";
-        int respuesta = 0;
+        int respuesta = RESULT_CANCELED;
         StringBuilder result = null;
 
         try {
@@ -628,27 +902,30 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                 HttpURLConnection cnx = (HttpURLConnection) url.openConnection();
                 respuesta = cnx.getResponseCode();
 
-                result = new StringBuilder();
-
                 if (respuesta == HttpURLConnection.HTTP_OK) {
+                    result = new StringBuilder();
                     InputStream in = new BufferedInputStream(cnx.getInputStream());
                     BufferedReader leer = new BufferedReader(new InputStreamReader(in));
 
                     while ((linea = leer.readLine()) != null) {
                         result.append(linea);
                     }
+                    resultadoGET = result.toString();
+                    respuesta = RESULT_OK;
+                }
+                else{
+                    resultadoGET = "Se produjo un error al buscar el detalle del comprobante";
                 }
             } else {
-                Toast toast = Toast.makeText(getApplicationContext(), R.string.msgErrInternet, Toast.LENGTH_LONG);
-                toast.show();
+                resultadoGET = getApplicationContext().getString(R.string.msgErrInternet);
             }
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            resultadoGET = e.getMessage();
         } catch (IOException e) {
-            e.printStackTrace();
+            resultadoGET = e.getMessage();
         }
 
-        return result.toString();
+        return respuesta;
 
     }
 
@@ -717,7 +994,7 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 if (statusCode == 200) {
-                    Toast.makeText(getApplicationContext(), "La imagen subio correctameente", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "La imagen se subio correctameente", Toast.LENGTH_LONG).show();
                 }
             }
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Principal">
+    tools:context=".PrincipalActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:textAlignment="center"
                 android:textSize="30sp"
                 tools:text="@string/nombreEmpresa" />
@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.6"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/titFletero"
                     android:textSize="18sp" />
 
@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/nombreFletero"
                     android:textAlignment="viewEnd"
                     android:textSize="18sp" />
@@ -68,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.65"
                     android:layout_marginTop="4dp"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/titNumerodeCaja"
                     android:textSize="18sp" />
 
@@ -79,8 +79,8 @@
                     android:layout_weight="1"
                     android:contentDescription="@string/titNumerodeCaja"
                     android:ems="1"
-                    android:fontFamily="@font/roboto"
-                    android:inputType="textPersonName|number" />
+                    android:fontFamily="@font/gotham_rounded_medium"
+                    android:inputType="number" />
 
             </LinearLayout>
 
@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.46"
                     android:layout_marginTop="2dp"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/titPlanilla"
                     android:textSize="18sp" />
 
@@ -108,8 +108,8 @@
                     android:layout_weight="1"
                     android:contentDescription="@string/titPlanilla"
                     android:ems="1"
-                    android:fontFamily="@font/roboto"
-                    android:inputType="text|textPersonName|number" />
+                    android:fontFamily="@font/gotham_rounded_medium"
+                    android:inputType="number" />
 
             </LinearLayout>
 
@@ -125,6 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/boton_redondo_morado"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/bntAceptar"
                     android:textColor="@color/common_google_signin_btn_text_dark_default" />
             </LinearLayout>

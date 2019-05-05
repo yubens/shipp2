@@ -23,32 +23,47 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/strEM_Detv"
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/roboto"
-                android:text="@string/strDetalle"
-                android:textAlignment="viewStart"
-                android:textSize="18sp" />
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/strEM_Valor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:fontFamily="@font/roboto"
-                android:text="@string/strValor" />
+                <TextView
+                    android:id="@+id/strEM_Detv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/gotham_rounded_medium"
+                    android:text="@string/strDetalle"
+                    android:textAlignment="viewStart"
+                    android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/strEM_Valorv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.6"
-                android:fontFamily="@font/roboto"
-                android:text="@string/strValor"
-                android:textAlignment="viewEnd" />
+                <TextView
+                    android:id="@+id/strEM_Valor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/strEM_Detv"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="159dp"
+                    android:layout_weight="0.3"
+                    android:fontFamily="@font/gotham_rounded_medium"
+                    android:text="@string/strValor" />
+
+                <TextView
+                    android:id="@+id/strEM_Valorv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="0.6"
+                    android:fontFamily="@font/gotham_rounded_medium"
+                    android:text="@string/strValor"
+                    android:textAlignment="viewEnd" />
+
+            </RelativeLayout>
+
+
 
         </LinearLayout>
 
@@ -60,7 +75,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="20dp"
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
@@ -69,16 +84,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/strCantidad" />
 
                 <EditText
                     android:id="@+id/ediEM_Cant"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="-6dp"
                     android:layout_marginRight="10dp"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/roboto"
+                    android:layout_weight="0.5"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:inputType="number" />
             </LinearLayout>
 
@@ -86,6 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
+                android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
@@ -93,16 +110,16 @@
                     android:id="@+id/strEM_SubTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/roboto"
+                    android:layout_weight="0"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/strSubTotal" />
 
                 <TextView
                     android:id="@+id/strEM_SubTotalv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/roboto"
+                    android:layout_weight="0.5"
+                    android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/strSubTotal"
                     android:textAlignment="viewEnd"
                     android:textSize="18sp"
@@ -126,7 +143,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/boton_redondeado"
                 android:backgroundTint="@android:color/holo_blue_bright"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/bntAceptar"
                 android:textStyle="bold" />
 
@@ -138,7 +155,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/boton_redondeado"
                 android:backgroundTint="@android:color/holo_red_light"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strCancelar"
                 android:textColor="@android:color/background_light"
                 android:textStyle="bold" />

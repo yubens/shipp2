@@ -25,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Principal" />
+        <activity android:name=".PrincipalActivity" />
         <activity android:name=".ListarComprobantesActivity" />
         <activity android:name=".MostrarComprobanteActivity" />
 
@@ -50,15 +50,14 @@
         <activity android:name=".RendicionFinalActivity" />
         <activity android:name=".FirmarActivity" />
         <activity android:name=".EditaMonedaActivity" />
+        <activity android:name=".DevolucionSinComprobanteActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <activity android:name=".CargaDevolucion" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-
+        <activity android:name=".DevolucionParcialActivity"></activity>
     </application>
 
 </manifest>

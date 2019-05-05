@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/titPlanilla"
                 android:textAlignment="center"
                 android:textSize="18sp"
@@ -62,7 +62,7 @@
 
                 android:layout_weight="1"
                 android:background="@drawable/boton_redondo_morado"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strVerEnMapa"
                 android:textColor="@color/common_google_signin_btn_text_dark_default"
                 android:textSize="14sp"
@@ -75,7 +75,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/boton_redondo_morado"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strActualizarComprobantes"
                 android:textColor="@android:color/background_light"
                 android:textStyle="bold" />

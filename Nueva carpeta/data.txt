@@ -1,0 +1,68 @@
+usuario 534.f.1
+pass 123
+
+caja 1
+planilla 20078
+
+-- no tocar ni subir app build gradle
+-- solo subir los modificados
+-- cambiar api key google maps
+
+
+
+**** arreglar anchos de comprobante.xml
+*** validacion de login
+*** ancho de datos numericos
+
+
+
+----devolucion----
+pasar id de cliente y devuelve id, cod y nombre vendedor
+
+289.vend01
+130100
+
+cod clientes 
+1051
+690
+4534
+
+EMP
+948d97d5-6894-469d-b73a-bed574259c6f
+
+VEND
+289VEND010
+
+color 
+#502b70
+2+100-18
+
+verde #85bb65
+
+https://www.facebook.com/idusApp/
+https://twitter.com/r77rios
+https://www.youtube.com/channel/UCXeBlnaTTHXCQ56cH9fL5Pw
+https://www.instagram.com/idusmdz/
+https://web.whatsapp.com/send?text=&phone=+5426122087997&abid=+5426122087997
+
+paula
+927 125.06
+101 13
+923 150
+703 26927
+
+emp 80fffa27-9da6-45d8-9f56-918859607c4e
+vend 534VEND002
+cli 534CLIENTE01055 
+899.71
+
+--- 0 a pagar          - color da14d3
+--- 1 pago total       -   celeste
+--- 2 pago parcial    -  amarillo
+--- 3 reenvio         -   verde
+--- 4 en espera     -  naranja?? o no debe pintar??
+
+cuales requieren firma obligatoria???
+que debe hacer en espera???
+ 
+

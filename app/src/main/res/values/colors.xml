@@ -5,6 +5,11 @@
     <color name="colorAccent">#502b70</color>
     <color name="colorBotDes">#9a74ba</color>
     <color name="colorAmarillo">#f5dd04</color>
-    <color name="colorCyan">#FFFF007B</color>
     <color name="colorGreen">#FF00FF00</color>
+    <color name="colorRosaPagar">#a80ea2</color>
+    <color name="colorCelesteTotal">#45818e</color>
+    <color name="colorAmarilloParcial">#cde02b</color>
+    <color name="colorVerdeReenvio">#1fb41f</color>
+    <color name="colorNaranjaEspera">#ec6a2b</color>
+
 </resources>
