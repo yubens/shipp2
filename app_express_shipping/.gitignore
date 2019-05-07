@@ -8,11 +8,3 @@
 /build
 /captures
 .externalNativeBuild
-
-app_express_shipping/\.svn/pristine/00/
-
-*.svn-base
-
-app_express_shipping/\.svn/
-
-app_express_shipping/app/build\.gradle
