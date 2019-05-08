@@ -417,6 +417,51 @@ public class RendicionFinalActivity extends AppCompatActivity {
 
     }
 
+    public int enviarMonedaPOST(int idMoneda, double cantidad) {
+        String linea = "";
+        int respuesta = 0;
+        StringBuilder result = null;
+        String idMovimiento = UUID.randomUUID().toString();
+
+        try {
+            if (verificaConexion(getApplicationContext())) {
+
+                String urlParametros = "_idMoneda=" + idMoneda + "&_cantidad=" + cantidad;
+                urlParametros = urlParametros.replace(",", ".");
+                HttpURLConnection cnx = null;
+                URL url = new URL(_strURL + "/insertarCantidadMoneda.php");
+                cnx = (HttpURLConnection) url.openConnection();
+
+                //estableciendo el metodo
+                cnx.setRequestMethod("POST");
+                //longitud de los parametros que estamos enviando
+                cnx.setRequestProperty("Context-length", "" + Integer.toString(urlParametros.getBytes().length));
+                //se menciona para la salida de datos
+                cnx.setDoOutput(true);
+
+                DataOutputStream wr = new DataOutputStream(cnx.getOutputStream());
+                wr.writeBytes(urlParametros);
+                wr.close();
+
+                InputStream in = cnx.getInputStream();
+                respuesta = cnx.getResponseCode();
+
+                return respuesta;
+
+            } else {
+                Toast toast = Toast.makeText(getApplicationContext(), R.string.msgErrInternet, Toast.LENGTH_LONG);
+                toast.show();
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return respuesta;
+
+    }
+
     public int obtDatosUnicoJSON(String result) {
         int res = 0;
 

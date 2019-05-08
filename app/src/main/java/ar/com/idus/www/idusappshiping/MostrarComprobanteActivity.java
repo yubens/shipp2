@@ -123,9 +123,16 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             comprobante = (Comprobante) getIntent().getSerializableExtra("comprobante");
             strFecha.setText(comprobante.getFecha());
             strComprobante.setText(comprobante.getComprobante());
+
+            if(comprobante.getNombreCliente().length() > 15)
+                strCliente.setTextSize(16);
             strCliente.setText(comprobante.getNombreCliente());
-            strDomicilio.setText(comprobante.getDomicilioCliente());
+
+            if(comprobante.getNombreVendedor().length() > 15)
+                strVendedor.setTextSize(16);
             strVendedor.setText(comprobante.getNombreVendedor());
+
+            strDomicilio.setText(comprobante.getDomicilioCliente());
             strTotal.setText(format.format(comprobante.getTotal()));
             total = comprobante.getTotal();
 
@@ -352,14 +359,19 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                     }
                     else {
                         final int movimiento = spOpciones.getSelectedItemPosition();
-                        if ((movimiento == 0) || (movimiento == 3)) {
+                        if ((movimiento == 3) || (movimiento == 4)) {
                             mensaje = "No se puede usar esta opción para comprobantes que están para cobrar";
                             Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG);
                             toast.show();
                         } else {
-                            if (importe > 0) {
+                            if(movimiento == 0){
+                                mensaje = "¿Confirma dejar A PAGAR el comprobante: " + strComprobante.getText().toString() + " ?";
+                            } else {
                                 mensaje = "¿Confirma el pago del comprobante: " + strComprobante.getText().toString() + " por un valor de $ " + txtImporte.getText().toString() + " ?";
-                                AlertDialog.Builder alerta;
+                            }
+
+                            if ((importe > 0) || (movimiento == 0)) {
+                                 AlertDialog.Builder alerta;
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                     alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
                                 } else {
@@ -536,7 +548,6 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             startActivity(intent);
 
         } else if (id == R.id.mnu03DevolucionTotal){
-            //Toast.makeText(getApplicationContext(), "Devolucion Total", Toast.LENGTH_SHORT).show();
             AlertDialog.Builder alerta;
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -749,8 +760,6 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         Thread thread = new Thread() {
             @Override
             public void run() {
-
-                //double _total = Double.valueOf(txtTotal.getText().toString().replace(",", "."));
                final boolean res = insert();
 
                 runOnUiThread(new Runnable() {

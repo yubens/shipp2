@@ -1,39 +1,38 @@
 package ar.com.idus.www.idusappshiping;
 
-import android.graphics.Color;
+import android.content.DialogInterface;
+import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import ar.com.idus.www.idusappshiping.modelos.Articulo;
-import ar.com.idus.www.idusappshiping.modelos.Comprobante;
 import ar.com.idus.www.idusappshiping.modelos.ComprobanteItem;
-import ar.com.idus.www.idusappshiping.utilidades.AdaptadorArticulosDevolucion;
+import ar.com.idus.www.idusappshiping.utilidades.AdaptadorDevolucionParcial;
+import ar.com.idus.www.idusappshiping.utilidades.Devoluciones;
 
 public class DevolucionParcialActivity extends AppCompatActivity {
     String _idEmpresa, _idVendedor, _strURL, _idCliente, _idFletero, nombCliente, comprobante;
     int _caja, _planilla;
     ArrayList<ComprobanteItem> listaItems;
     ArrayList<Articulo> listaArticulos;
+    //List <Articulo> pruebas;
     Articulo articulo;
     List<Articulo> articulos;
+    List <Articulo> chequeados;
     TextView txtNombre, txtComprobante;
+    Button btnEnviar;
     protected ListView listaDetalle;
+    List <Integer> cantOrig;
     //CheckBox checked;
     //EditText edCant;
 
@@ -44,12 +43,11 @@ public class DevolucionParcialActivity extends AppCompatActivity {
         txtNombre      = findViewById(R.id.strNombreClientePar);
         txtComprobante = findViewById(R.id.strCompPar);
         listaDetalle = findViewById(R.id.listArt);
-        //edCant = findViewById(R.id.editCantidad);
-        //checked = findViewById(R.id.checkArt);
-
+        btnEnviar = findViewById(R.id.btnEnviarPar);
 
         @SuppressWarnings("unchecked")
         Bundle recupera = getIntent().getExtras();
+
         if (recupera != null) {
             _idVendedor = recupera.getString("_idVendedor");
             _idEmpresa = recupera.getString("_idEmpresa");
@@ -65,52 +63,116 @@ public class DevolucionParcialActivity extends AppCompatActivity {
             txtNombre.setText(nombCliente);
             txtComprobante.setText(comprobante);
 
+            cantOrig = new ArrayList<>();
 
             if(nombCliente.length() > 20){
                 txtNombre.setTextSize(14);
             }
 
             convertirItems();
-            mostrarListaItems();
-            /*
-            Thread tr = new Thread(){
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mostrarListaItems();
-                        }
-                    });
-                }
-            };
-
-            tr.start();*/
         }
 
-        System.out.println("despues de crear");
+        AdaptadorDevolucionParcial adapter = new AdaptadorDevolucionParcial(this, articulos, cantOrig);
+        listaDetalle.setAdapter(adapter);
 
-        /*listaDetalle.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("eligiendo...");
-                ComprobanteItem item = (ComprobanteItem) parent.getItemAtPosition(position);
+            public void onClick(View view) {
+                AlertDialog.Builder alerta;
 
-                Toast.makeText(getApplicationContext(), "tocado", Toast.LENGTH_SHORT).show();
+                int elegidos = verElegidos();
 
-                //checked.setChecked(true);
-                //edCant.setEnabled(true);
+                if(elegidos >0 ){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext());
+                    }
+
+                    alerta.setTitle(R.string.tituloImportamte);
+                    alerta.setMessage(R.string.alertaDevolParcial);
+                    alerta.setCancelable(false);
+                    alerta.setPositiveButton(R.string.confirmar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            devolver();
+                        }
+                    }).setNegativeButton(R.string.rechazar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    }).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Debes elegir al menos un articulo para devolver",
+                                    Toast.LENGTH_LONG).show();
+                }
             }
-        });*/
+        });
 
     }
 
+    public int verElegidos(){
+        chequeados = new ArrayList<>();
+
+        for (int i = 0; i < articulos.size(); i++) {
+            if(articulos.get(i).isElegido()){
+                chequeados.add(articulos.get(i));
+            }
+        }
+
+        return chequeados.size();
+    }
+
+    public void devolver(){
+        Thread tr = new Thread(){
+
+            @Override
+            public void run(){
+                final boolean res = prepararDevolucion();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String msj;
+                        if (res) {
+                            msj = getApplicationContext().getString(R.string.mensajeInsercionOK);
+                        }
+                        else{
+                            msj = getApplication().getString(R.string.mensajeInsercionError);
+                        }
+
+                        Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                });
+            }
+        };
+        tr.start();
+
+    }
+
+    public boolean prepararDevolucion(){
+       Double total = 0.0;
+
+        if ((_idCliente == null) || (_idVendedor == null) || (_idEmpresa == null)) {
+            Toast.makeText(getApplicationContext(), R.string.errorNulo, Toast.LENGTH_LONG).show();
+            finish();
+        }
+
+        for(int i = 0; i < chequeados.size(); i++){
+            total = total + chequeados.get(i).getCantidad() * chequeados.get(i).getPrecioVenta();
+        }
+
+        return Devoluciones.insertarDevolucion(_idEmpresa, _idVendedor, _idCliente, _idFletero,
+                                                    total, _caja, _planilla, chequeados);
+    }
 
     void convertirItems(){
         Iterator<ComprobanteItem> iterator = listaItems.iterator();
         ComprobanteItem comprobanteItem;
         articulos = new ArrayList<>();
 
+        //transforma los los comprobantesItem en articulos y guarda las cantidades originales
         while (iterator.hasNext()){
             articulo = new Articulo();
             comprobanteItem = iterator.next();
@@ -124,73 +186,39 @@ public class DevolucionParcialActivity extends AppCompatActivity {
             articulo.setElegido(false);
 
             articulos.add(articulo);
+            cantOrig.add((int)articulo.getCantidad());
         }
 
 
     }
 
-    private void mostrarListaItems() {
+    /*private void mostrarListaItems() {
         System.out.println("mostrando...");
         if (listaItems != null) {
 
+            pruebas = new ArrayList<Articulo>();
+            List <Integer> cantidades = new ArrayList<>();
 
-            List <Articulo> pruebas;
-            Articulo test;
-
-            for(int i = 1; i <= 10; i ++){
-                test = new Articulo();
-                test.setCantidad(i);
+            for(int i = 1; i <= 20; i ++){
+                Articulo test = new Articulo();
+                test.setId(String .valueOf(i));
+                test.setCantidad((int) (Math.random()* i + 1));
                 test.setElegido(false);
                 test.setNombre("art " + i);
-                test.setPrecioVenta(Double.valueOf(i*2));
+                test.setPrecioVenta(Double.valueOf(Math.random() *i + 2));
+                pruebas.add(test);
+                //cantidades.add((int)test.getCantidad());
+                cantidades.add((int) test.getCantidad());
 
             }
 
-            AdaptadorArticulosDevolucion adapter = new AdaptadorArticulosDevolucion(this, articulos);
+
+            AdaptadorDevolucionParcial adapter = new AdaptadorDevolucionParcial(this, pruebas, cantidades);
             listaDetalle.setAdapter(adapter);
             //listaDetalle.setClickable(true);
         }
-    }
-
-    /*public class AdaptadorArticulosDevolucion extends ArrayAdapter<ComprobanteItem> {
-        public AdaptadorArticulosDevolucion(List<ComprobanteItem> lista) {
-            super(DevolucionParcialActivity.this, R.layout.articulos_a_devolver, listaItems);
-        }
-
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            DecimalFormat format = new DecimalFormat("#.00");
-            String detalle = listaItems.get(position).getDetalle();
-            double cantidad;
-            int aux;
-
-            System.out.println("en adaptador");
-
-            View item = getLayoutInflater().inflate(R.layout.articulos_a_devolver, null);
-
-            TextView strDetalle = (TextView) item.findViewById(R.id.lblDetalle);
-            TextView strPrecioUnitario = (TextView) item.findViewById(R.id.lblPrecioUnitario);
-            TextView strTotal = (TextView) item.findViewById(R.id.lblTotal);
-            EditText edCant = item.findViewById(R.id.editCantidad);
-            edCant.setEnabled(false);
-            //CheckBox checked = item.findViewById(R.id.checkArt);
-
-            //si el detalle es amplio se reduce el tamaño de la letra
-            if (detalle.length() > 20) {
-                strDetalle.setTextSize(11);
-            }
-            cantidad = listaItems.get(position).getCantidad();
-            aux = (int) cantidad;
-            strDetalle.setText(detalle);
-            edCant.setText(String.valueOf(aux));
-            //edCant.setEnabled(false);
-            strPrecioUnitario.setText("PxUni: " + format.format(listaItems.get(position).getPrecioFinal()));
-            strTotal.setText(format.format(listaItems.get(position).getTotal()));
-
-
-            return item;
-        }
-
     }*/
+
+
+
 }
