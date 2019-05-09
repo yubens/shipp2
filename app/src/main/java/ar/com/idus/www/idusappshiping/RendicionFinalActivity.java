@@ -142,56 +142,66 @@ public class RendicionFinalActivity extends AppCompatActivity {
         btnAceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder alerta;
-                alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
-                alerta.setMessage(R.string.strMensajeDeConfirimacionRendicio)
-                        .setTitle(R.string.strAdvertencia)
-                        .setCancelable(false)
-                        .setNegativeButton(R.string.strCancelar, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .setPositiveButton(R.string.bntAceptar, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                pBar.setVisibility(View.VISIBLE);
-                                Thread tr = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        final int response = enviarDiasPOST(_idEmpresa, _caja, _planilla);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                String msj;
-                                                if (response == 200) {
-                                                    msj = getApplicationContext().getString(R.string.strExitoMoneda);
+                final Double rendido, diferencia;
+                rendido = Double.valueOf(strTotal.getText().toString());
+                diferencia = Double.valueOf(strDiferencia.getText().toString());
+
+                if(rendido <= 0){
+                    Toast.makeText(getApplicationContext(), "El importe a rendir debe ser mayor a cero (0)",
+                                    Toast.LENGTH_LONG).show();
+                } else {
+                    AlertDialog.Builder alerta;
+                    alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
+                    alerta.setMessage(R.string.strMensajeDeConfirimacionRendicio)
+                            .setTitle(R.string.strAdvertencia)
+                            .setCancelable(false)
+                            .setNegativeButton(R.string.strCancelar, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .setPositiveButton(R.string.bntAceptar, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    pBar.setVisibility(View.VISIBLE);
+                                    Thread tr = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            String idt = _idEmpresa + "total";
+                                            String idd = _idEmpresa + "diferencia";
+
+                                            final int response1 = enviarMonedaPOST(idt, rendido);
+                                            final int response2 = enviarMonedaPOST(idd, diferencia);
+                                            final int response3 = enviarDiasPOST(_idEmpresa, _caja, _planilla);
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    String msj;
+
+                                                    if (response1 == 200 && response2 == 200 && response3 == 200) {
+                                                        msj = getApplicationContext().getString(R.string.strExitoRendicion);
+                                                    }
+                                                    else{
+                                                        msj = getApplicationContext().getString((R.string.strErrorRendicion));
+                                                    }
+
+                                                    pBar.setVisibility(View.GONE);
+                                                    Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_LONG).show();
+                                                    finish();
                                                 }
-                                                else{
-                                                    msj = getApplicationContext().getString((R.string.strErrorMoneda));
-                                                }
-
-                                                pBar.setVisibility(View.GONE);
-                                                Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_LONG).show();
-                                                finish();
-                                            }
-                                        });
-                                    }
-                                };
-                                tr.start();
-                                /*Thread tr1 = new Thread() {
-                                    @Override
-                                    public void run() {
+                                            });
+                                        }
+                                    };
+                                    tr.start();
+                                }
+                            });
+                    AlertDialog alert = alerta.create();
+                    alert.show();
+                }
 
 
-                                    }
-                                };
-                                tr1.start();*/
-                            }
-                        });
-                AlertDialog alert = alerta.create();
-                alert.show();
+
             }
         });
 
@@ -417,7 +427,7 @@ public class RendicionFinalActivity extends AppCompatActivity {
 
     }
 
-    public int enviarMonedaPOST(int idMoneda, double cantidad) {
+    public int enviarMonedaPOST(String idMoneda, double cantidad) {
         String linea = "";
         int respuesta = 0;
         StringBuilder result = null;

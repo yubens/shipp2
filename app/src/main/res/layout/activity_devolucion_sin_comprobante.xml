@@ -36,17 +36,19 @@
                     android:fontFamily="@font/gotham_rounded_medium"
                     android:text="@string/strNombreCliente"
 
-                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/txtNombreCliente"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/gotham_rounded_medium"
                     android:hint="@string/strNombreCliente"
-                    android:layout_marginStart="10dp"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -143,7 +145,7 @@
                         android:layout_weight="0.5"
                         android:fontFamily="@font/gotham_rounded_medium"
                         android:hint="@string/txtMultiplo"
-                        android:textAlignment="textStart"
+                        android:textAlignment="center"
                         android:textSize="18sp"
                         tools:text="@string/txtMultiplo" />
 

@@ -8,14 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.text.DecimalFormat;
 import java.util.List;
-
 import ar.com.idus.www.idusappshiping.R;
 import ar.com.idus.www.idusappshiping.modelos.Articulo;
 
@@ -74,7 +71,6 @@ public class AdaptadorDevolucionParcial extends ArrayAdapter <Articulo> {
                     int pos = viewHolder.edCant.getId();
 
                     if(s.length() > 0){
-                        System.out.println("cambiando");
 
                         if(Double.valueOf(s.toString()).isNaN() ){
                             Toast.makeText(getContext(), "Dato ingresado no númerico",
@@ -133,7 +129,7 @@ public class AdaptadorDevolucionParcial extends ArrayAdapter <Articulo> {
                         viewHolder.edCant.setEnabled(false);
                         viewHolder.edCant.setText("");
                         viewHolder.txtCant.setText(String.valueOf(cant));
-                        viewHolder.txtTotal.setText(String.valueOf(total));
+                        viewHolder.txtTotal.setText(format.format(total));
                     }
                 }
             });
@@ -173,7 +169,7 @@ public class AdaptadorDevolucionParcial extends ArrayAdapter <Articulo> {
         }
 
         detalle = lista.get(position).getNombre();
-        if(detalle.length() > 50){
+        if(detalle.length() > 40){
             holder.txtDetalle.setTextSize(11);
         }
         holder.txtDetalle.setText(detalle);

@@ -24,8 +24,6 @@ public class DevolucionParcialActivity extends AppCompatActivity {
     String _idEmpresa, _idVendedor, _strURL, _idCliente, _idFletero, nombCliente, comprobante;
     int _caja, _planilla;
     ArrayList<ComprobanteItem> listaItems;
-    ArrayList<Articulo> listaArticulos;
-    //List <Articulo> pruebas;
     Articulo articulo;
     List<Articulo> articulos;
     List <Articulo> chequeados;
@@ -33,8 +31,7 @@ public class DevolucionParcialActivity extends AppCompatActivity {
     Button btnEnviar;
     protected ListView listaDetalle;
     List <Integer> cantOrig;
-    //CheckBox checked;
-    //EditText edCant;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +62,10 @@ public class DevolucionParcialActivity extends AppCompatActivity {
 
             cantOrig = new ArrayList<>();
 
-            if(nombCliente.length() > 20){
+            if(nombCliente.length() > 18){
                 txtNombre.setTextSize(14);
+            } else if(nombCliente.length() > 22){
+                txtNombre.setTextSize(13);
             }
 
             convertirItems();
@@ -188,37 +187,5 @@ public class DevolucionParcialActivity extends AppCompatActivity {
             articulos.add(articulo);
             cantOrig.add((int)articulo.getCantidad());
         }
-
-
     }
-
-    /*private void mostrarListaItems() {
-        System.out.println("mostrando...");
-        if (listaItems != null) {
-
-            pruebas = new ArrayList<Articulo>();
-            List <Integer> cantidades = new ArrayList<>();
-
-            for(int i = 1; i <= 20; i ++){
-                Articulo test = new Articulo();
-                test.setId(String .valueOf(i));
-                test.setCantidad((int) (Math.random()* i + 1));
-                test.setElegido(false);
-                test.setNombre("art " + i);
-                test.setPrecioVenta(Double.valueOf(Math.random() *i + 2));
-                pruebas.add(test);
-                //cantidades.add((int)test.getCantidad());
-                cantidades.add((int) test.getCantidad());
-
-            }
-
-
-            AdaptadorDevolucionParcial adapter = new AdaptadorDevolucionParcial(this, pruebas, cantidades);
-            listaDetalle.setAdapter(adapter);
-            //listaDetalle.setClickable(true);
-        }
-    }*/
-
-
-
 }

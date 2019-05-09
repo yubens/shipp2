@@ -124,12 +124,18 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             strFecha.setText(comprobante.getFecha());
             strComprobante.setText(comprobante.getComprobante());
 
-            if(comprobante.getNombreCliente().length() > 15)
-                strCliente.setTextSize(16);
+            if(comprobante.getNombreCliente().length() > 15){
+                strCliente.setTextSize(14);
+            } else if(comprobante.getNombreCliente().length() > 20){
+                strCliente.setTextSize(13);
+            }
             strCliente.setText(comprobante.getNombreCliente());
 
-            if(comprobante.getNombreVendedor().length() > 15)
-                strVendedor.setTextSize(16);
+            if(comprobante.getNombreVendedor().length() > 15){
+                strVendedor.setTextSize(14);
+            } else if(comprobante.getNombreVendedor().length() > 20){
+                strVendedor.setTextSize(13);
+            }
             strVendedor.setText(comprobante.getNombreVendedor());
 
             strDomicilio.setText(comprobante.getDomicilioCliente());
@@ -418,6 +424,7 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                             } else {
                                 Toast toast = Toast.makeText(getApplicationContext(), R.string.strImporteMayorACero, Toast.LENGTH_LONG);
                                 toast.show();
+                                txtImporte.setText("");
                             }
                         }
                     }
@@ -532,7 +539,6 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             }
 
         } else if (id == R.id.mnu02DevolucionParcial){
-            Toast.makeText(getApplicationContext(), "Devolucion Parcial", Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(getApplicationContext(), DevolucionParcialActivity.class);
             intent.putExtra("_idVendedor", _idVendedor);
@@ -653,7 +659,7 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             DecimalFormat format = new DecimalFormat("#.00");
             String detalle = listaItems.get(position).getDetalle();
 
-            View item = convertView;
+            View item;
             item = getLayoutInflater().inflate(R.layout.comprobante_items, null);
             TextView strCodigo = (TextView) item.findViewById(R.id.lblCodigo);
             TextView strDetalle = (TextView) item.findViewById(R.id.lblDetalle);
@@ -662,11 +668,20 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             TextView strTotal = (TextView) item.findViewById(R.id.lblTotal);
 
             strCodigo.setText(listaItems.get(position).getCodigoArticulo());
-
+            System.out.println(detalle.length());
             //si el detalle es amplio se reduce el tamaño de la letra
-            if (detalle.length() > 25) {
+            if (detalle.length() < 20){
                 strDetalle.setTextSize(13);
+            } else if (detalle.length() < 25) {
+                strDetalle.setTextSize(12);
+            } else if (detalle.length() < 30) {
+                strDetalle.setTextSize(11);
+            } else if (detalle.length() < 35) {
+                strDetalle.setTextSize(10);
+            } else {
+                strDetalle.setTextSize(9);
             }
+
             strDetalle.setText(detalle);
 
             strCantidad.setText("Cantidad: " + format.format(listaItems.get(position).getCantidad()));

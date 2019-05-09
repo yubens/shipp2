@@ -121,6 +121,11 @@ public class DevolucionSinComprobanteActivity extends AppCompatActivity {
                         }
                         else{
                             String nom = procesarDatosCliente(resultado);
+                            if(nom.length() > 18){
+                                txtNombreCliente.setTextSize(14);
+                            } else if(nom.length() > 22){
+                                txtNombreCliente.setTextSize(14);
+                            }
                             txtNombreCliente.setText(nom);
                         }
                         ;
