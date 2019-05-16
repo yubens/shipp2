@@ -11,9 +11,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import ar.com.idus.www.idusappshiping.modelos.Articulo;
 import ar.com.idus.www.idusappshiping.modelos.ComprobanteItem;
@@ -27,9 +29,10 @@ public class DevolucionParcialActivity extends AppCompatActivity {
     Articulo articulo;
     List<Articulo> articulos;
     List <Articulo> chequeados;
-    TextView txtNombre, txtComprobante;
+    TextView txtNombre, txtComprobante, txtFullTotal;
     Button btnEnviar;
     protected ListView listaDetalle;
+    protected DecimalFormat format = new DecimalFormat("#.00");
     List <Integer> cantOrig;
 
 
@@ -41,6 +44,9 @@ public class DevolucionParcialActivity extends AppCompatActivity {
         txtComprobante = findViewById(R.id.strCompPar);
         listaDetalle = findViewById(R.id.listArt);
         btnEnviar = findViewById(R.id.btnEnviarPar);
+        txtFullTotal = findViewById(R.id.txtTotalDP);
+
+        txtFullTotal.setText("0.00");
 
         @SuppressWarnings("unchecked")
         Bundle recupera = getIntent().getExtras();
@@ -57,7 +63,13 @@ public class DevolucionParcialActivity extends AppCompatActivity {
             nombCliente = recupera.getString("_nombCliente");
             comprobante = recupera.getString("_comprobante");
 
-            txtNombre.setText(nombCliente);
+            if(nombCliente.length() > 20 && nombCliente.length() <= 25){
+                txtNombre.setTextSize(14);
+                txtNombre.setText(nombCliente);
+            } else if(nombCliente.length() > 25) {
+                txtNombre.setText(new StringTokenizer(nombCliente, "-").nextToken());
+            }
+
             txtComprobante.setText(comprobante);
 
             cantOrig = new ArrayList<>();
@@ -88,8 +100,10 @@ public class DevolucionParcialActivity extends AppCompatActivity {
                         alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext());
                     }
 
+                    String msj = getResources().getString(R.string.alertaDevolParcial) + " El monto a devolver es de $ " + txtFullTotal.getText().toString();
                     alerta.setTitle(R.string.tituloImportamte);
-                    alerta.setMessage(R.string.alertaDevolParcial);
+                    alerta.setMessage(msj);
+
                     alerta.setCancelable(false);
                     alerta.setPositiveButton(R.string.confirmar, new DialogInterface.OnClickListener() {
                         @Override
@@ -113,12 +127,16 @@ public class DevolucionParcialActivity extends AppCompatActivity {
 
     public int verElegidos(){
         chequeados = new ArrayList<>();
+        double total = 0.0;
 
         for (int i = 0; i < articulos.size(); i++) {
             if(articulos.get(i).isElegido()){
                 chequeados.add(articulos.get(i));
+                total = total + articulos.get(i).getCantidad() * articulos.get(i).getPrecioVenta();
             }
         }
+
+        txtFullTotal.setText(format.format(total));
 
         return chequeados.size();
     }

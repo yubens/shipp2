@@ -54,6 +54,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
 import ar.com.idus.www.idusappshiping.modelos.Articulo;
@@ -124,16 +125,16 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             strFecha.setText(comprobante.getFecha());
             strComprobante.setText(comprobante.getComprobante());
 
-            if(comprobante.getNombreCliente().length() > 15){
+            if(comprobante.getNombreCliente().length() < 25){
                 strCliente.setTextSize(14);
-            } else if(comprobante.getNombreCliente().length() > 20){
+            } else if(comprobante.getNombreCliente().length() < 30){
                 strCliente.setTextSize(13);
             }
             strCliente.setText(comprobante.getNombreCliente());
 
-            if(comprobante.getNombreVendedor().length() > 15){
+            if(comprobante.getNombreVendedor().length() < 25){
                 strVendedor.setTextSize(14);
-            } else if(comprobante.getNombreVendedor().length() > 20){
+            } else if(comprobante.getNombreVendedor().length() < 30){
                 strVendedor.setTextSize(13);
             }
             strVendedor.setText(comprobante.getNombreVendedor());
@@ -654,8 +655,8 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
-
-
+            String aux = "";
+            StringTokenizer token;
             DecimalFormat format = new DecimalFormat("#.00");
             String detalle = listaItems.get(position).getDetalle();
 
@@ -668,21 +669,26 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             TextView strTotal = (TextView) item.findViewById(R.id.lblTotal);
 
             strCodigo.setText(listaItems.get(position).getCodigoArticulo());
-            System.out.println(detalle.length());
-            //si el detalle es amplio se reduce el tamaño de la letra
-            if (detalle.length() < 20){
-                strDetalle.setTextSize(13);
-            } else if (detalle.length() < 25) {
-                strDetalle.setTextSize(12);
-            } else if (detalle.length() < 30) {
-                strDetalle.setTextSize(11);
-            } else if (detalle.length() < 35) {
-                strDetalle.setTextSize(10);
+
+            //si el detalle es amplio se reduce el tamaño de la letra y se recorta el detalle
+            if (detalle.length() <= 30){
+                strDetalle.setTextSize(14);
             } else {
-                strDetalle.setTextSize(9);
+                strDetalle.setTextSize(13);
             }
 
             strDetalle.setText(detalle);
+
+            if(detalle.length() > 30)
+            {
+                //aux = detalle.substring(0, 30);
+                token = new StringTokenizer(detalle, "(");
+                aux = token.nextToken();
+                System.out.println(aux);
+                strDetalle.setText(aux);
+                //aux = StringTokenizer
+            }
+
 
             strCantidad.setText("Cantidad: " + format.format(listaItems.get(position).getCantidad()));
             strPrecioUnitario.setText("PxUni: " + format.format(listaItems.get(position).getPrecioFinal()));
