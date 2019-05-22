@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import ar.com.idus.www.idusappshiping.R;
 import ar.com.idus.www.idusappshiping.modelos.Articulo;
@@ -23,13 +24,15 @@ public class AdaptadorDevolucionParcial extends ArrayAdapter <Articulo> {
     protected List<Integer> cantidades;
     protected DecimalFormat format = new DecimalFormat("#.00");
     protected String detalle;
+    TextView txtFullTotal;
 
 
-    public AdaptadorDevolucionParcial(Activity context, List <Articulo> lista, List <Integer> cantidades){
+    public AdaptadorDevolucionParcial(Activity context, List <Articulo> lista, List <Integer> cantidades, TextView txtFullTotal){
         super(context, R.layout.articulos_a_devolver, lista);
         this.context = context;
         this.lista = lista;
         this.cantidades = cantidades;
+        this.txtFullTotal = txtFullTotal;
     }
 
     static class ViewHolder {
@@ -47,9 +50,9 @@ public class AdaptadorDevolucionParcial extends ArrayAdapter <Articulo> {
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = null;
         final double cantidad, total;
-
+        String aux;
+        StringTokenizer token;
         int cantAux;
-
 
         if (convertView == null) {
             LayoutInflater inflator = context.getLayoutInflater();
@@ -104,6 +107,8 @@ public class AdaptadorDevolucionParcial extends ArrayAdapter <Articulo> {
                             }
                         }
                     }
+
+                    fullTotal();
                 }
 
                 @Override
@@ -131,12 +136,15 @@ public class AdaptadorDevolucionParcial extends ArrayAdapter <Articulo> {
                         lista.get(position).setElegido(false);
                         cant = cantidades.get(pos);
                         total = cant * lista.get(pos).getPrecioVenta();
+                        lista.get(pos).setCantidad(cant);
                         viewHolder.edCant.setVisibility(View.INVISIBLE);
                         viewHolder.edCant.setEnabled(false);
                         viewHolder.edCant.setText("");
                         viewHolder.txtCant.setText(String.valueOf(cant));
                         viewHolder.txtTotal.setText(format.format(total));
                     }
+
+                    fullTotal();
                 }
             });
 
@@ -179,17 +187,36 @@ public class AdaptadorDevolucionParcial extends ArrayAdapter <Articulo> {
         detalle = lista.get(position).getNombre();
 
         //si el detalle es amplio se reduce el tamaño de la letra y se recorta el detalle
-        if (detalle.length() <= 25){
+        if (detalle.length() <= 30){
             holder.txtDetalle.setTextSize(14);
         } else {
-            holder.txtDetalle.setTextSize(8);
+            holder.txtDetalle.setTextSize(13);
         }
 
         holder.txtDetalle.setText(detalle);
 
+        if(detalle.length() > 30) {
+            token = new StringTokenizer(detalle, "(");
+            aux = token.nextToken();
+            System.out.println(aux);
+            holder.txtDetalle.setText(aux);
+        }
+
         holder.txtPrecio.setText(format.format(lista.get(position).getPrecioVenta()));
 
         return view;
+    }
+
+    void fullTotal(){
+        double total = 0.00;
+
+        for (int i = 0; i < lista.size(); i++) {
+            if(lista.get(i).isElegido()){
+                total = total + lista.get(i).getCantidad() * lista.get(i).getPrecioVenta();
+            }
+        }
+
+        txtFullTotal.setText(format.format(total));
     }
 }
 

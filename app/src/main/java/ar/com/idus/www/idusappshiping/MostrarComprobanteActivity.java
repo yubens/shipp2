@@ -125,16 +125,17 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             strFecha.setText(comprobante.getFecha());
             strComprobante.setText(comprobante.getComprobante());
 
-            if(comprobante.getNombreCliente().length() < 25){
+            if(comprobante.getNombreCliente().length() > 15 && comprobante.getNombreCliente().length() <= 20){
+                strCliente.setTextSize(15);
+                strCliente.setText(comprobante.getNombreCliente());
+            } else if (comprobante.getNombreCliente().length() > 20){
                 strCliente.setTextSize(14);
-            } else if(comprobante.getNombreCliente().length() < 30){
-                strCliente.setTextSize(13);
+                strCliente.setText(new StringTokenizer(comprobante.getNombreCliente(), "-").nextToken());
             }
-            strCliente.setText(comprobante.getNombreCliente());
 
-            if(comprobante.getNombreVendedor().length() < 25){
+            if(comprobante.getNombreVendedor().length() <= 25){
                 strVendedor.setTextSize(14);
-            } else if(comprobante.getNombreVendedor().length() < 30){
+            } else {
                 strVendedor.setTextSize(13);
             }
             strVendedor.setText(comprobante.getNombreVendedor());
@@ -679,16 +680,12 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
 
             strDetalle.setText(detalle);
 
-            if(detalle.length() > 30)
-            {
-                //aux = detalle.substring(0, 30);
+            if(detalle.length() > 30) {
                 token = new StringTokenizer(detalle, "(");
                 aux = token.nextToken();
                 System.out.println(aux);
                 strDetalle.setText(aux);
-                //aux = StringTokenizer
             }
-
 
             strCantidad.setText("Cantidad: " + format.format(listaItems.get(position).getCantidad()));
             strPrecioUnitario.setText("PxUni: " + format.format(listaItems.get(position).getPrecioFinal()));

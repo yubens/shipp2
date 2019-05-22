@@ -12,25 +12,26 @@
         android:id="@+id/txtNombreClientePar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/gotham_rounded_medium"
         android:text="@string/strNombreCliente"
         android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/txtComproPar"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtComproPar" />
 
     <TextView
         android:id="@+id/strNombreClientePar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/gotham_rounded_medium"
         android:hint="@string/strNombreCliente"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/txtComproPar"
-        app:layout_constraintTop_toBottomOf="@+id/txtNombreClientePar" />
+        app:layout_constraintStart_toEndOf="@+id/txtNombreClientePar"
+        app:layout_constraintTop_toBottomOf="@+id/strCompPar" />
 
     <TextView
         android:id="@+id/txtComproPar"
@@ -41,6 +42,7 @@
         android:fontFamily="@font/gotham_rounded_medium"
         android:text="@string/strComprobante"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,13 +50,13 @@
         android:id="@+id/strCompPar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="18dp"
         android:fontFamily="@font/gotham_rounded_medium"
         android:hint="@string/strComprobante"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtComproPar" />
+        app:layout_constraintStart_toEndOf="@+id/txtNombreClientePar"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/txtMensPar"
@@ -131,27 +133,25 @@
         android:id="@+id/lblTotalDP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="95dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/gotham_rounded_medium"
         android:text="@string/strTotal"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/strCompPar" />
+        app:layout_constraintTop_toBottomOf="@+id/txtNombreClientePar" />
 
     <TextView
         android:id="@+id/txtTotalDP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="148dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/gotham_rounded_medium"
         android:hint="@string/strTotal"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.363"
-        app:layout_constraintStart_toEndOf="@+id/lblTotalDP"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/txtNombreClientePar"
         app:layout_constraintTop_toBottomOf="@+id/strNombreClientePar" />
 
 

@@ -63,27 +63,20 @@ public class DevolucionParcialActivity extends AppCompatActivity {
             nombCliente = recupera.getString("_nombCliente");
             comprobante = recupera.getString("_comprobante");
 
-            if(nombCliente.length() > 20 && nombCliente.length() <= 25){
-                txtNombre.setTextSize(14);
+            if(nombCliente.length() > 15 && nombCliente.length() <= 20){
+                txtNombre.setTextSize(15);
                 txtNombre.setText(nombCliente);
-            } else if(nombCliente.length() > 25) {
+            } else if(nombCliente.length() > 20) {
+                txtNombre.setTextSize(14);
                 txtNombre.setText(new StringTokenizer(nombCliente, "-").nextToken());
             }
 
             txtComprobante.setText(comprobante);
-
             cantOrig = new ArrayList<>();
-
-            if(nombCliente.length() > 18){
-                txtNombre.setTextSize(14);
-            } else if(nombCliente.length() > 22){
-                txtNombre.setTextSize(13);
-            }
-
             convertirItems();
         }
 
-        AdaptadorDevolucionParcial adapter = new AdaptadorDevolucionParcial(this, articulos, cantOrig);
+        AdaptadorDevolucionParcial adapter = new AdaptadorDevolucionParcial(this, articulos, cantOrig, txtFullTotal);
         listaDetalle.setAdapter(adapter);
 
         btnEnviar.setOnClickListener(new View.OnClickListener() {
