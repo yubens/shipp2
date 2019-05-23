@@ -120,7 +120,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
         listaComprobantes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("click");
+
                 Comprobante comprobante = (Comprobante) parent.getItemAtPosition(position);
                 if (comprobante.getEstado() > 0) {
                     Toast.makeText(getApplicationContext(), "Este comprobante ya tiene registrada una actividad", Toast.LENGTH_LONG).show();
@@ -403,7 +403,6 @@ public class ListarComprobantesActivity extends AppCompatActivity {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
-            System.out.println("adaptador comprobante");
 
             DecimalFormat format = new DecimalFormat("#0.00");
             View item = convertView;

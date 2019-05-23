@@ -133,7 +133,6 @@ public class EditaMonedaActivity extends AppCompatActivity {
                 resultado = moneda.getValor() * importe;
                 strSubTotal.setText(format.format(resultado));
             }
-            System.out.println("cambiando...");
 
             if(ediCantidad.equals("")){
                 strSubTotal.setText("");

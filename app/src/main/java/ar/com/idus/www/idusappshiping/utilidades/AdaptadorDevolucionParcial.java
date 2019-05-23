@@ -198,7 +198,6 @@ public class AdaptadorDevolucionParcial extends ArrayAdapter <Articulo> {
         if(detalle.length() > 30) {
             token = new StringTokenizer(detalle, "(");
             aux = token.nextToken();
-            System.out.println(aux);
             holder.txtDetalle.setText(aux);
         }
 

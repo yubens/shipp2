@@ -66,7 +66,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class MostrarComprobanteActivity extends AppCompatActivity {
 
-    TextView strFecha, strComprobante, strCliente, strDomicilio, strVendedor, strTotal, strSaldo, strPago, strDirFirma;
+    TextView strFecha, strComprobante, strCliente, strDomicilio, strVendedor, strTotal, strSaldo, strPago, strDirFirma, strTxtSen;
     Button btnDetalle, btnHistorico, btnCancelar, btnPagar, btnFirma;
     EditText txtImporte;
     ListView listaDetalle;
@@ -78,10 +78,12 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
     Comprobante comprobante;
     String _strUrl, root, fname, resultadoGET;
     String _codigoEmpresa, _idEmpresa, _idCliente, _idFletero, _idVendedor;
+    String claseComp;
     int _caja, _planilla;
     File myDir, file;
     Boolean requiereFirma = true;
     Boolean firmo = false;
+    boolean nc = false;
     double total;
 
     //para localizar el dispositivo
@@ -105,7 +107,6 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         txtImporte = (EditText) findViewById(R.id.MCompEdiTextImporte);
         listaDetalle = (ListView) findViewById(R.id.listaDetalle);
         spOpciones = (Spinner) findViewById(R.id.MCompSpiAccion);
-
         btnDetalle = (Button) findViewById(R.id.MCompBtnDetalle);
         btnHistorico = (Button) findViewById(R.id.MCompBtnPagos);
         btnPagar = (Button) findViewById(R.id.MCompBtnAceptar);
@@ -114,6 +115,7 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         imagenPago = (ImageView) findViewById(R.id.MCompImgPago);
         btnFirma = (Button) findViewById(R.id.MCompBtnFirma);
         strDirFirma = (TextView) findViewById(R.id.MCompStrFileFirma);
+        strTxtSen = findViewById(R.id.strTextoSeñalador);
 
         versionApp = BuildConfig.VERSION_NAME;
         versionAndroid = Build.VERSION.RELEASE;
@@ -158,7 +160,12 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             _idVendedor = comprobante.getIdVendedor();
             _caja = comprobante.getCaja();
             _planilla = comprobante.getPlanilla();
+            claseComp = comprobante.getClase();
 
+            if(claseComp.equals("NC") || claseComp.equals("NI")){
+                nc = true;
+                inhabilitarOpciones();
+            }
 
             pbDetalle.setVisibility(View.VISIBLE);
 
@@ -506,10 +513,12 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(comprobante.getMhr() == 0){
-            getMenuInflater().inflate(R.menu.opciones_devolucion_0, menu);
-        } else{
-            getMenuInflater().inflate(R.menu.opciones_devolucion_1, menu);
+        if(!nc){
+            if(comprobante.getMhr() == 0){
+                getMenuInflater().inflate(R.menu.opciones_devolucion_0, menu);
+            } else{
+                getMenuInflater().inflate(R.menu.opciones_devolucion_1, menu);
+            }
         }
 
         return super.onCreateOptionsMenu(menu);
@@ -581,6 +590,15 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
         }
 
         return super.onContextItemSelected(item);
+    }
+
+    public void inhabilitarOpciones(){
+        imagenPago.setVisibility(View.INVISIBLE);
+        //spOpciones.setEnabled(false);
+        spOpciones.setVisibility(View.INVISIBLE);
+        strTxtSen.setVisibility(View.INVISIBLE);
+        btnPagar.setEnabled(false);
+
     }
 
     @Override
@@ -683,7 +701,6 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             if(detalle.length() > 30) {
                 token = new StringTokenizer(detalle, "(");
                 aux = token.nextToken();
-                System.out.println(aux);
                 strDetalle.setText(aux);
             }
 
