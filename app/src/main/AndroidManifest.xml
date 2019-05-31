@@ -21,7 +21,6 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -50,13 +49,7 @@
         <activity android:name=".RendicionFinalActivity" />
         <activity android:name=".FirmarActivity" />
         <activity android:name=".EditaMonedaActivity" />
-        <activity android:name=".DevolucionSinComprobanteActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".DevolucionSinComprobanteActivity"/>
         <activity android:name=".DevolucionParcialActivity"></activity>
     </application>
 

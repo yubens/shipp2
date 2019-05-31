@@ -84,7 +84,7 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
     Boolean requiereFirma = true;
     Boolean firmo = false;
     boolean nc = false;
-    double total;
+    double total, saldo;
 
     //para localizar el dispositivo
     private LocationManager locManager;
@@ -143,13 +143,21 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             strVendedor.setText(comprobante.getNombreVendedor());
 
             strDomicilio.setText(comprobante.getDomicilioCliente());
-            strTotal.setText(format.format(comprobante.getTotal()));
+
             total = comprobante.getTotal();
+            System.out.println(total);
+            total = Math.round(total * 100.0)/100.0;
+            System.out.println(total);
+            strTotal.setText(format.format(total));
 
             if (comprobante.getSaldo() <= 0.01) {
                 strSaldo.setText(format.format(comprobante.getTotal()));
             } else {
-                strSaldo.setText(format.format(comprobante.getSaldo()));
+                saldo = comprobante.getSaldo();
+                System.out.println(saldo);
+                saldo = Math.round(saldo * 100.0)/100.0;
+                System.out.println(saldo);
+                strSaldo.setText(format.format(saldo));
             }
             txtImporte.setText(format.format(comprobante.getSaldo()));
             _strUrl = recupera.getString("_strURL");
@@ -471,7 +479,6 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                     case 1:
                         txtImporte.setText(strSaldo.getText().toString().replace(",", "."));
                         txtImporte.setEnabled(true);
-                        txtImporte.requestFocus();
                         requiereFirma = false;
                         imagenPago.setImageResource(R.mipmap.button_pago_total);
                         break;
@@ -479,6 +486,7 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                     case 2:
                         txtImporte.setText("");
                         txtImporte.setEnabled(true);
+                        txtImporte.setActivated(true);
                         txtImporte.requestFocus();
                         requiereFirma = false;
                         imagenPago.setImageResource(R.mipmap.button_pago_parcial);
@@ -632,9 +640,11 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
     //muestra los items del comprobante
     private ArrayList<ComprobanteItem> listarComprobanteItems(String response) {
         ArrayList<ComprobanteItem> lista = new ArrayList<ComprobanteItem>();
+
         try {
             JSONArray json = new JSONArray(response);
             for (int i = 0; i < json.length(); i++) {
+
                 ComprobanteItem item = new ComprobanteItem();
                 item.setId(json.getJSONObject(i).getString("ID"));
                 item.setCantidad(json.getJSONObject(i).getDouble("CANTIDAD"));
