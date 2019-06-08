@@ -145,18 +145,14 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
             strDomicilio.setText(comprobante.getDomicilioCliente());
 
             total = comprobante.getTotal();
-            System.out.println(total);
             total = Math.round(total * 100.0)/100.0;
-            System.out.println(total);
             strTotal.setText(format.format(total));
 
             if (comprobante.getSaldo() <= 0.01) {
                 strSaldo.setText(format.format(comprobante.getTotal()));
             } else {
                 saldo = comprobante.getSaldo();
-                System.out.println(saldo);
                 saldo = Math.round(saldo * 100.0)/100.0;
-                System.out.println(saldo);
                 strSaldo.setText(format.format(saldo));
             }
             txtImporte.setText(format.format(comprobante.getSaldo()));
@@ -712,6 +708,10 @@ public class MostrarComprobanteActivity extends AppCompatActivity {
                 token = new StringTokenizer(detalle, "(");
                 aux = token.nextToken();
                 strDetalle.setText(aux);
+            }
+
+            if(aux.length() > 35){
+                strDetalle.setTextSize(12.7f);
             }
 
             strCantidad.setText("Cantidad: " + format.format(listaItems.get(position).getCantidad()));

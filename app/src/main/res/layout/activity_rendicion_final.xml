@@ -96,7 +96,7 @@
                 android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strARendir"
                 android:textAlignment="textEnd"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -122,7 +122,7 @@
                 android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strTotalRendido"
                 android:textAlignment="textEnd"
-                android:textSize="24sp"
+                android:textSize="22sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -149,7 +149,7 @@
                 android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strDiferencia"
                 android:textAlignment="textEnd"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
         </LinearLayout>
 
         <LinearLayout

@@ -31,7 +31,7 @@
 
             <TextView
                 android:id="@+id/strMoneyR_Detalle"
-                android:layout_width="match_parent"
+                android:layout_width="395dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:fontFamily="@font/gotham_rounded_medium"
@@ -40,10 +40,15 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/strMoneyR_ID"
+                android:id="@+id/strMoneyR_SubTotal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1" />
+                android:layout_weight="0.8"
+                android:fontFamily="@font/gotham_rounded_medium"
+                android:text="@string/strSubTotal"
+                android:textAlignment="textStart"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -54,13 +59,13 @@
 
             <TextView
                 android:id="@+id/strMoneyR_Cantidad"
-                android:layout_width="match_parent"
+                android:layout_width="351dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strCantidad"
                 android:textAlignment="textStart"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/strMoneyR_Valor"
@@ -70,18 +75,9 @@
                 android:fontFamily="@font/gotham_rounded_medium"
                 android:text="@string/strValor"
                 android:textAlignment="textStart"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/strMoneyR_SubTotal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:fontFamily="@font/gotham_rounded_medium"
-                android:text="@string/strSubTotal"
-                android:textAlignment="textStart"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+
         </LinearLayout>
 
     </LinearLayout>

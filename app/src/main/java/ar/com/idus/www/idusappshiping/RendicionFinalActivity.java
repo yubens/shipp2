@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -32,11 +33,17 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import ar.com.idus.www.idusappshiping.modelos.MoneyR;
+import ar.com.idus.www.idusappshiping.utilidades.StringConverter;
 
 public class RendicionFinalActivity extends AppCompatActivity {
 
@@ -84,7 +91,7 @@ public class RendicionFinalActivity extends AppCompatActivity {
                 public void run() {
                     final String response = enviarGET(_idEmpresa, _caja, _planilla, "", 0);
                     final String resultado = enviarGET(_idEmpresa, _caja, _planilla, _idFletero, 1);
-                    runOnUiThread(new Runnable() {
+                    runOnUiThread( new Runnable() {
                         @Override
                         public void run() {
                             String msj ="";
@@ -103,10 +110,8 @@ public class RendicionFinalActivity extends AppCompatActivity {
 
                                 int r = obtDatosUnicoJSON(resultado);
                                 if (r > 0) {
-                                    DecimalFormat format = new DecimalFormat("#0.00");
-                                    strARendir.setText(format.format(Double.parseDouble(totalARendir)));
-                                }
-                                else{
+                                    strARendir.setText(StringConverter.formatString(Double.valueOf(totalARendir)));
+                                } else{
                                     Toast.makeText(getApplicationContext(),R.string.errorJson, Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -116,7 +121,6 @@ public class RendicionFinalActivity extends AppCompatActivity {
                     });
                 }
             };
-
         }
 
         btnCancelar.setOnClickListener(new View.OnClickListener() {
@@ -143,8 +147,8 @@ public class RendicionFinalActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final Double rendido, diferencia;
-                rendido = Double.valueOf(strTotal.getText().toString());
-                diferencia = Double.valueOf(strDiferencia.getText().toString());
+                rendido = Double.valueOf(StringConverter.setDot(strTotal.getText().toString()));
+                diferencia = Double.valueOf(StringConverter.setDot(strDiferencia.getText().toString()));
 
                 if(rendido <= 0){
                     Toast.makeText(getApplicationContext(), "El importe a rendir debe ser mayor a cero (0)",
@@ -199,9 +203,6 @@ public class RendicionFinalActivity extends AppCompatActivity {
                     AlertDialog alert = alerta.create();
                     alert.show();
                 }
-
-
-
             }
         });
 
@@ -241,18 +242,18 @@ public class RendicionFinalActivity extends AppCompatActivity {
                             int r = obtDatosUnicoJSON(resultado);
                             if (r > 0) {
                                 DecimalFormat format = new DecimalFormat("#0.00");
-                                strARendir.setText(format.format(Double.parseDouble(totalARendir)));
-                                _total[0] = Double.parseDouble(strTotal.getText().toString());
-                                _aRendir[0] = Double.parseDouble(strARendir.getText().toString());
+
+                                strARendir.setText(StringConverter.formatString(Double.valueOf(totalARendir)));
+                                _total[0] = Double.parseDouble(StringConverter.setDot(strTotal.getText().toString()));
+                                _aRendir[0] = Double.parseDouble(StringConverter.setDot(strARendir.getText().toString()));
                                 _diferencia[0] = _aRendir[0] - _total[0];
-                                strDiferencia.setText(format.format(_diferencia[0]));
+                                strDiferencia.setText(StringConverter.formatString(_diferencia[0]));
                             }
                             else{
                                 Toast.makeText(getApplicationContext(),R.string.errorJson, Toast.LENGTH_LONG).show();
                             }
                         }
                         pBar.setVisibility(View.GONE);
-
                     }
                 });
             }
@@ -262,7 +263,6 @@ public class RendicionFinalActivity extends AppCompatActivity {
     }
 
     public String enviarGET(String idEmpresa, String caja, String planilla, String idFletero, int accion) {
-
         URL url = null;
         String linea = "";
         int respuesta = 0;
@@ -353,7 +353,7 @@ public class RendicionFinalActivity extends AppCompatActivity {
 
             View item = convertView;
             item = getLayoutInflater().inflate(R.layout.monedas_rendicion, null);
-            TextView strID = (TextView) item.findViewById(R.id.strMoneyR_ID);
+            //TextView strID = (TextView) item.findViewById(R.id.strMoneyR_ID);
             TextView strDetalle = (TextView) item.findViewById(R.id.strMoneyR_Detalle);
             TextView strCantidad = (TextView) item.findViewById(R.id.strMoneyR_Cantidad);
             TextView strValor = (TextView) item.findViewById(R.id.strMoneyR_Valor);
@@ -369,8 +369,6 @@ public class RendicionFinalActivity extends AppCompatActivity {
             strSubTotal.setText("Sub Total: " + format.format(arrayMoneR.get(position).getSubTotal()));
             return item;
         }
-
-
     }
 
     private void mostrarModeloMonedas() {
@@ -424,7 +422,6 @@ public class RendicionFinalActivity extends AppCompatActivity {
         }
 
         return respuesta;
-
     }
 
     public int enviarMonedaPOST(String idMoneda, double cantidad) {
@@ -435,7 +432,6 @@ public class RendicionFinalActivity extends AppCompatActivity {
 
         try {
             if (verificaConexion(getApplicationContext())) {
-
                 String urlParametros = "_idMoneda=" + idMoneda + "&_cantidad=" + cantidad;
                 urlParametros = urlParametros.replace(",", ".");
                 HttpURLConnection cnx = null;
@@ -469,7 +465,6 @@ public class RendicionFinalActivity extends AppCompatActivity {
         }
 
         return respuesta;
-
     }
 
     public int obtDatosUnicoJSON(String result) {

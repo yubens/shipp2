@@ -105,7 +105,7 @@
                     android:id="@+id/pb00"
                     style="@style/Widget.AppCompat.ProgressBar"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1" />
 
             </LinearLayout>
@@ -127,87 +127,92 @@
 
             </LinearLayout>
 
-            <RelativeLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:orientation="horizontal">
+                android:layout_height="match_parent">
 
-                <ImageButton
-                    android:id="@+id/btnFacebook"
+                <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="0dp"
-                    android:background="@android:color/white"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/btn_facebook_100" />
+                    android:layout_marginTop="50dp"
+                    android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/btnTwitter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_toEndOf="@+id/btnFacebook"
-                    android:background="@android:color/white"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/btn_twitter_100" />
+                    <ImageButton
+                        android:id="@+id/btnFacebook"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="0dp"
+                        android:background="@android:color/white"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/btn_facebook_100" />
 
-                <ImageButton
-                    android:id="@+id/btnWhat"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_toEndOf="@+id/btnTwitter"
-                    android:background="@android:color/white"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/btn_what_50" />
+                    <ImageButton
+                        android:id="@+id/btnTwitter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_toEndOf="@+id/btnFacebook"
+                        android:background="@android:color/white"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/btn_twitter_100" />
 
-                <ImageButton
-                    android:id="@+id/btnInsta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_toEndOf="@+id/btnWhat"
-                    android:background="@android:color/white"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/btn_insta_50" />
+                    <ImageButton
+                        android:id="@+id/btnWhat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_toEndOf="@+id/btnTwitter"
+                        android:background="@android:color/white"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/btn_what_50" />
 
-                <ImageButton
-                    android:id="@+id/btnYout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_toEndOf="@+id/btnInsta"
-                    android:background="@android:color/white"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/btn_you_50" />
+                    <ImageButton
+                        android:id="@+id/btnInsta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_toEndOf="@+id/btnWhat"
+                        android:background="@android:color/white"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/btn_insta_50" />
 
-                <ImageButton
-                    android:id="@+id/btnWeb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_toEndOf="@+id/btnYout"
-                    android:background="@android:color/white"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/btn_globo_100" />
+                    <ImageButton
+                        android:id="@+id/btnYout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_toEndOf="@+id/btnInsta"
+                        android:background="@android:color/white"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/btn_you_50" />
+
+                    <ImageButton
+                        android:id="@+id/btnWeb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_toEndOf="@+id/btnYout"
+                        android:background="@android:color/white"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/btn_globo_100" />
 
 
-            </RelativeLayout>
+                </RelativeLayout>
+            </HorizontalScrollView>
 
         </LinearLayout>
     </LinearLayout>
