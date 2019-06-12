@@ -37,6 +37,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.idus.www.idusappshiping.modelos.Comprobante;
@@ -50,7 +51,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
     String _idEmpresa, _idFletero, _caja, _planilla, _codigoEmpresa, _nombreFletero;
     ProgressBar pb01;
     boolean mostrarMenu = true;
-    private ArrayList<Comprobante> lvComprobante;
+    private ArrayList<Comprobante> lvComprobante, sinActiv;
 
     boolean ocultar_menu = false;
 
@@ -83,6 +84,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
             btnGPS.setVisibility(View.GONE);
             strPlanilla.setText("Buscando comprobantes de la Caja: " + _caja + " " + _planilla);
             listaComprobantes.setVisibility(View.GONE);
+            sinActiv = new ArrayList<>();
 
             Thread tr = new Thread() {
                 @Override
@@ -107,7 +109,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                     });
                 }
             };
-            tr.start();
+            //tr.start();
         }
 
         btnActualizar.setOnClickListener(new View.OnClickListener() {
@@ -171,6 +173,36 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(), R.string.strNoEstanFinalizadosTodosLosComprobantes, Toast.LENGTH_LONG);
                 toast.show();
             } else {
+                System.out.println("pre sin activ " + sinActiv.size());
+                verificarComprSinActiv();
+                System.out.println("post sin activ " + sinActiv.size());
+
+                if(sinActiv.size() >= 0){
+                    AlertDialog.Builder alerta;
+                    alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
+                    alerta.setMessage("quieres..")
+                            .setCancelable(false)
+                            .setNegativeButton(R.string.strCancelar, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    dialog.cancel();
+                                }
+                            })
+                            .setPositiveButton(R.string.bntAceptar, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    lvComprobante.get(0).setTipo_mov(0);
+                                    lvComprobante.get(1).setTipo_mov(0);
+                                    lvComprobante.get(2).setTipo_mov(0);
+                                }
+                            });
+
+                    AlertDialog alert = alerta.create();
+                    alert.show();
+                }
+
+
                 AlertDialog.Builder alerta;
                 alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
                 alerta.setMessage(R.string.strMensajeFinDeReparto)
@@ -179,6 +211,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                         .setNegativeButton(R.string.strCancelar, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
                                 dialog.cancel();
                             }
                         })
@@ -188,6 +221,8 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                                 Thread tr = new Thread() {
                                     @Override
                                     public void run() {
+
+
                                         final int respuesta = enviarDiasPOST(_idEmpresa, _idFletero, _caja, _planilla);
                                         runOnUiThread(new Runnable() {
                                             @Override
@@ -225,7 +260,6 @@ public class ListarComprobantesActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        super.onResume();
 
         strPlanilla.setText("Buscando comprobantes de la Caja: " + _caja + " " + _planilla);
         listaComprobantes.setVisibility(View.GONE);
@@ -240,16 +274,16 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                    if(resultado.equals("[]")){
-                        strPlanilla.setText("No hay comprobantes para la planilla: " + _caja + " | " + _planilla);
-                        mostrarMenu = false;
-                        pb01.setVisibility(View.GONE);
-                        invalidateOptionsMenu();
-                    }
-                    else{
-                        lvComprobante = listaComprobantes01(resultado);
-                        mostrarLista();
-                    }
+                        if(resultado.equals("[]")){
+                            strPlanilla.setText("No hay comprobantes para la planilla: " + _caja + " | " + _planilla);
+                            mostrarMenu = false;
+                            pb01.setVisibility(View.GONE);
+                            invalidateOptionsMenu();
+                        }
+                        else{
+                            lvComprobante = listaComprobantes01(resultado);
+                            mostrarLista();
+                        }
                     }
                 });
 
@@ -257,6 +291,20 @@ public class ListarComprobantesActivity extends AppCompatActivity {
         };
         tr.start();
         super.onResume();
+    }
+
+    public void verificarComprSinActiv(){
+        Iterator <Comprobante> iterator = lvComprobante.iterator();
+        Comprobante buscado;
+
+        while (iterator.hasNext()){
+            buscado = iterator.next();
+
+            if(buscado.getEstado() == 0 && (buscado.getClase().equals("CI") ||  buscado.getClase().equals("FT"))){
+                sinActiv.add(buscado);
+            }
+        }
+
     }
 
     //metodo para obtener los datos desde el servidor
@@ -381,6 +429,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                 comp.setTipo_mov(json.getJSONObject(i).getInt("TIPO_MOV"));
                 comp.setEnvio_idus(json.getJSONObject(i).getInt("ENVIO_IDUS"));
                 //lo meto en el lis que va a devolver.
+                System.out.println(comp.getTipo_mov());
                 lista.add(comp);
             }
             return lista;

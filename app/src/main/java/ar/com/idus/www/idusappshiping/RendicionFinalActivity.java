@@ -121,6 +121,7 @@ public class RendicionFinalActivity extends AppCompatActivity {
                     });
                 }
             };
+            tr.start();
         }
 
         btnCancelar.setOnClickListener(new View.OnClickListener() {
@@ -231,11 +232,13 @@ public class RendicionFinalActivity extends AppCompatActivity {
                             msj = "No se obtuvieron datos de las monedas";
                             Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_SHORT).show();
                         }
-                        else if(resultado.equals("[]")){
+
+                        if(resultado.equals("[]")){
                             msj = "No se obtuvieron datos de la planilla";
                             Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_SHORT).show();
                         }
-                        else {
+
+                        if(response.length() > 2 && resultado.length() > 2) {
                             arrayMoneR = listarMonedas(response);
                             mostrarModeloMonedas();
 
