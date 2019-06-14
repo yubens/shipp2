@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +40,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import ar.com.idus.www.idusappshiping.modelos.Comprobante;
 
@@ -52,6 +54,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
     ProgressBar pb01;
     boolean mostrarMenu = true;
     private ArrayList<Comprobante> lvComprobante, sinActiv;
+    AlertDialog alert2 = null;
 
     boolean ocultar_menu = false;
 
@@ -173,45 +176,16 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(), R.string.strNoEstanFinalizadosTodosLosComprobantes, Toast.LENGTH_LONG);
                 toast.show();
             } else {
-                System.out.println("pre sin activ " + sinActiv.size());
                 verificarComprSinActiv();
-                System.out.println("post sin activ " + sinActiv.size());
 
-                if(sinActiv.size() >= 0){
-                    AlertDialog.Builder alerta;
-                    alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
-                    alerta.setMessage("quieres..")
-                            .setCancelable(false)
-                            .setNegativeButton(R.string.strCancelar, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    dialog.cancel();
-                                }
-                            })
-                            .setPositiveButton(R.string.bntAceptar, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    lvComprobante.get(0).setTipo_mov(0);
-                                    lvComprobante.get(1).setTipo_mov(0);
-                                    lvComprobante.get(2).setTipo_mov(0);
-                                }
-                            });
-
-                    AlertDialog alert = alerta.create();
-                    alert.show();
-                }
-
-
-                AlertDialog.Builder alerta;
-                alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
-                alerta.setMessage(R.string.strMensajeFinDeReparto)
+                AlertDialog.Builder alerta2;
+                alerta2 = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
+                alerta2.setMessage(R.string.strMensajeFinDeReparto)
                         .setTitle(R.string.strAdvertencia)
                         .setCancelable(false)
                         .setNegativeButton(R.string.strCancelar, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
                                 dialog.cancel();
                             }
                         })
@@ -221,8 +195,6 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                                 Thread tr = new Thread() {
                                     @Override
                                     public void run() {
-
-
                                         final int respuesta = enviarDiasPOST(_idEmpresa, _idFletero, _caja, _planilla);
                                         runOnUiThread(new Runnable() {
                                             @Override
@@ -240,7 +212,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                                                 }
                                                 else{
                                                     Toast.makeText(getApplicationContext(), "Se produjo un error al insertar el registro de rendición",
-                                                                    Toast.LENGTH_LONG).show();
+                                                            Toast.LENGTH_LONG).show();
                                                 }
 
                                             }
@@ -251,11 +223,140 @@ public class ListarComprobantesActivity extends AppCompatActivity {
 
                             }
                         });
-                AlertDialog alert = alerta.create();
-                alert.show();
+                alert2 = alerta2.create();
+                //alert.show();
+
+                if(sinActiv.size() > 0){
+                    AlertDialog.Builder alerta;
+                    alerta = new AlertDialog.Builder(getSupportActionBar().getThemedContext(), android.R.style.Theme_Material_Dialog_Alert);
+                    alerta.setMessage("¿Deseas marcar los comprobantes sin actividad como 'A Pagar'?")
+                            .setCancelable(false)
+                            .setNegativeButton(R.string.strCancelar, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    sinActiv = new ArrayList<>();
+                                    dialog.cancel();
+                                    alert2.show();
+                                }
+                            })
+                            .setPositiveButton(R.string.bntAceptar, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    prepararActualizacion();
+
+                                }
+                            });
+
+                    AlertDialog alert = alerta.create();
+                    alert.show();
+
+                } else {
+                    alert2.show();
+                }
             }
         }
         return super.onContextItemSelected(item);
+    }
+
+    public void prepararActualizacion(){
+
+        final String versionApp = BuildConfig.VERSION_NAME;
+        final String versionAndroid = Build.VERSION.RELEASE;
+
+        final Thread thread = new Thread() {
+            @Override
+            public void run(){
+                final Iterator <Comprobante> iterator = sinActiv.iterator();
+                //Comprobante buscado;
+
+                while (iterator.hasNext()){
+                    final Comprobante buscado = iterator.next();
+
+                    final int respuesta = enviarDiasPOST2(3, buscado, 0.0, 0, "0.0", "0.0",
+                            "0.0", versionApp, versionAndroid);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (respuesta == 200) {
+                                try {
+
+                                    if(!iterator.hasNext()){
+                                        Toast toast = Toast.makeText(getApplicationContext(), "Movimientos registrados correctamente", Toast.LENGTH_SHORT);
+                                        toast.show();
+                                        Thread.sleep(2000);
+                                        alert2.show();
+                                    }
+
+                                    //Thread.sleep(10000);
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    e.getLocalizedMessage();
+                                }
+                                //finish();
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(),"Se produjo un error al actualizar el comprobante" + buscado.getComprobante(),
+                                                Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+
+            }
+        };
+        thread.start();
+    }
+
+    public int enviarDiasPOST2(int numButton, Comprobante comp, double importe, int movimiento, String lat, String lon,
+                              String pres, String versionApp, String versionAndroid) {
+        String linea = "";
+        int respuesta = 0;
+        StringBuilder result = null;
+        String idMovimiento = UUID.randomUUID().toString();
+
+        try {
+            if (verificaConexion(getApplicationContext())) {
+
+                String urlParametros = "_idMovimiento=" + idMovimiento +
+                        "&_idComprobante=" + comp.getId() + "&_tipoMovimiento=" + movimiento + "&_importe=" + importe +
+                        "&_idFletero=" + comp.getIdFletero() + "&_lat=" + lat + "&_lon=" + lon + "&_pres" +
+                        "&_versionApp=" + versionApp + "&_versionAndroid=" + versionAndroid + "&_caja=" + comp.getCaja() +
+                        "&_numeroCaja=" + comp.getPlanilla();
+                urlParametros = urlParametros.replace(",", ".");
+                HttpURLConnection cnx = null;
+                URL url = new URL(_strUrl + "/insertarMovimientoRendicionFletero.php");
+                cnx = (HttpURLConnection) url.openConnection();
+
+                //estableciendo el metodo
+                cnx.setRequestMethod("POST");
+                //longitud de los parametros que estamos enviando
+                cnx.setRequestProperty("Context-length", "" + Integer.toString(urlParametros.getBytes().length));
+                //se menciona para la salida de datos
+                cnx.setDoOutput(true);
+
+                DataOutputStream wr = new DataOutputStream(cnx.getOutputStream());
+                wr.writeBytes(urlParametros);
+                wr.close();
+
+                InputStream in = cnx.getInputStream();
+                respuesta = cnx.getResponseCode();
+
+                return respuesta;
+
+            } else {
+                Toast toast = Toast.makeText(getApplicationContext(), R.string.msgErrInternet, Toast.LENGTH_LONG);
+                toast.show();
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return respuesta;
+
     }
 
     @Override
@@ -294,13 +395,14 @@ public class ListarComprobantesActivity extends AppCompatActivity {
     }
 
     public void verificarComprSinActiv(){
+
         Iterator <Comprobante> iterator = lvComprobante.iterator();
         Comprobante buscado;
 
         while (iterator.hasNext()){
             buscado = iterator.next();
 
-            if(buscado.getEstado() == 0 && (buscado.getClase().equals("CI") ||  buscado.getClase().equals("FT"))){
+            if(buscado.getEstado() == 0   && (buscado.getClase().equals("CI") ||  buscado.getClase().equals("FT"))){
                 sinActiv.add(buscado);
             }
         }
@@ -429,7 +531,7 @@ public class ListarComprobantesActivity extends AppCompatActivity {
                 comp.setTipo_mov(json.getJSONObject(i).getInt("TIPO_MOV"));
                 comp.setEnvio_idus(json.getJSONObject(i).getInt("ENVIO_IDUS"));
                 //lo meto en el lis que va a devolver.
-                System.out.println(comp.getTipo_mov());
+
                 lista.add(comp);
             }
             return lista;
